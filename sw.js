@@ -1,7 +1,7 @@
 // El alcance distingue repositorios que comparten el mismo dominio github.io.
 const CACHE_PREFIX = `isis-${self.registration.scope}-`;
 const CACHE_NAME = `${CACHE_PREFIX}v1`;
-const FILES = ['./', './index.html', './style.css', './app.js', './game.css', './game.js', './game-core.js', './gardening.js', './gardening-core.js', './motion.js', './illustration.js', './atmosphere.css', './gardening.css', './audio.js', './soundscape.js', './pwa.js', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png', './icons/apple-touch-icon.png'];
+const FILES = ['./', './index.html', './style.css', './app.js', './game.css', './game.js', './game-core.js', './gardening.js', './gardening-core.js', './daily-core.js', './extras.js', './motion.js', './illustration.js', './atmosphere.css', './gardening.css', './audio.js', './soundscape.js', './pwa.js', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png', './icons/apple-touch-icon.png'];
 const ASSETS = new Set(FILES.map(path => new URL(path, self.registration.scope).href));
 
 self.addEventListener('install', event => {

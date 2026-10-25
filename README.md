@@ -133,3 +133,12 @@ Esta revisión sigue sin publicar. Se añadió un personaje vectorial con pierna
 El ambiente incorpora alas independientes en mariposas, ondulaciones del estanque, nenúfares, brisa en las copas y flores, halos lentos de faroles y una señal del destino al caminar. Las animaciones decorativas se pausan con un diálogo abierto, al ocultar la página o con «Pausar ambiente». La preferencia de pausa se guarda y los cambios del ajuste de movimiento reducido del dispositivo se aplican mientras está abierto el juego.
 
 El rediseño usa una insignia floral, iconos de los rincones, paleta de bosque y luz de miel, un marco suave y transiciones de día/noche. Todo se dibuja con SVG y CSS; no se descargan sprites ni videos. Los módulos nuevos (`motion.js`, `illustration.js`, `atmosphere.css`) forman parte de la caché sin conexión y del paquete estático.
+
+
+### Fase local: un jardín propio
+
+La mochila incluye decoración (hasta 30 objetos, colocados junto a Isis y movibles) y exportación/importación JSON del jardín. El buzón y los sobres muestran notas incluidas en el juego. El editor de cartas personales se retiró porque no hay sincronización entre dispositivos. La mochila muestra una sola lista de hallazgos del día.
+
+Cada nueva fecha local libera ambos parterres y renueva los hallazgos; los diez encuentros cambian de lugar de forma estable durante el día. Decoración, recuerdos permanentes y posición se conservan. La primera apertura de esta actualización conserva las flores existentes. Si la app sigue abierta, el cambio se aplica al volver al jardín, sin interrumpir una actividad. No hay reinicios por reloj atrasado, rachas ni penalizaciones.
+
+Los encuentros incluyen composición de pétalos, dibujo de constelaciones y un paseo de tres paradas tras una mariposa. El ambiente respeta la pausa y el movimiento reducido del sistema.

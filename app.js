@@ -52,7 +52,28 @@ $('#day-toggle').onclick=()=>{const day=$('.world').classList.toggle('day');$('#
 const letters=[
   'Este jardín tiene tus flores favoritas y un cielo que puedes visitar cuando quieras. Un pequeño lugar pensado para ti.',
   'Un girasol para tus días de sol, una margarita para acompañar la noche. Aquí puedes quedarte un ratito, a tu manera.',
-  'Hay una frase que tiene su propio rincón entre todas estas flores: Besito en tu pollollo.'
+  'Hay una frase que tiene su propio rincón entre todas estas flores: Besito en tu pollollo.',
+  'Isis, si pudiera mandarte un abrazo en un sobre, este tendría uno. Mientras tanto, te dejo estas palabras y un lugar entre mis girasoles favoritos.',
+  'Me gusta imaginar un jardín contigo: tú eligiendo las margaritas y yo buscando un sitio para sentarme cerquita de ti.',
+  'No tienes que llenar de flores todo el jardín hoy. Una semillita también puede ser un paseo completo.',
+  'Si hoy el mundo hace demasiado ruido, aquí hay una banca imaginaria, un poquito de sombra y un espacio para ti.',
+  'Hay girasoles que miran al sol. Yo encuentro algo bonito cada vez que pienso en ti.',
+  'Te propongo una cita sencilla: una película, algo rico para compartir y tu mano cerca de la mía.',
+  'Esta margarita viene sin preguntas que responder. Solo quería llegar hasta ti y hacerte compañía.',
+  'No hace falta encontrar palabras para todo lo que sientes. Puedes dibujar una línea, mirar una estrella o quedarte aquí.',
+  'Entre todos los colores de este jardín, todavía faltan los que tú inventes. Me gusta que puedas dejar algo tuyo en él.',
+  'Una notita breve, por si hoy prefieres algo pequeñito: te quiero. Besito en tu pollollo.',
+  'Si miras el cielo esta noche, piensa que por aquí también hay alguien pensando en ti. Te mando un abrazo entre las estrellas.',
+  'Me gustaría aprender los nombres de las flores contigo, aunque terminemos poniéndoles los nuestros.',
+  'A veces una tarde bonita cabe en muy poco: caminar sin destino, encontrar una flor y tener a alguien con quien compartirla.',
+  'Tu lugar en este jardín no depende de cuánto plantes ni de cuántas veces vuelvas. Siempre puedes entrar y simplemente pasear.',
+  'Hoy puedes elegir el camino más corto, el más largo o ninguno. La banquita también tiene su encanto.',
+  'Guardo una invitación para ti: hagamos algo de arte juntos. Puede salir raro, torcido o lleno de color; me gustaría hacerlo contigo.',
+  'Si una mariposa te hace cambiar de camino, podemos seguirla. Hay paseos que se vuelven bonitos justo cuando dejan de tener un plan.',
+  'Quería regalarte algo que se pareciera a un ratito tranquilo entre flores. Por eso este jardín lleva un poquito de ti en cada rincón.',
+  'Las estrellas de aquí no piden deseos a cambio de brillar. Puedes mirarlas sin pedir nada, solo porque te gustan.',
+  'Ojalá la próxima vez que veamos margaritas podamos detenernos un momento. Yo feliz de esperar contigo.',
+  'Para cuando cierres el jardín: te dejo un girasol imaginario en el bolsillo y un besito en tu pollollo para el camino.'
 ];
 let letterIndex=0;
 $('#letter-open').onclick=()=>{$('#letter-text').textContent=letters[letterIndex];$('#letter-dialog').showModal();};

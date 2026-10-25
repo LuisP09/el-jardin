@@ -1,3 +1,5 @@
+import {dayKey,renewDay,dailyEncounters,restoreExtras} from './daily-core.js';
+import {createExtras} from './extras.js';
 import { WORLD, clampPoint, moveTowards, nearestStation, cameraBounds, restorePosition } from './game-core.js';
 import { restorePlots } from './gardening-core.js';
 import { createGardening, bloomSVG } from './gardening.js';
@@ -15,25 +17,36 @@ const stations = [
   { id:'art', x:1230, y:400, icon:'◌', name:'El taller', action:'Pintar un ratito', memory:'Un trazo a tu manera' },
   { id:'cinema', x:240, y:270, icon:'▷', name:'El cine del bosque', action:'Entrar al pequeño cine', memory:'Una historia compartida' }
 ];
-const encounters=[
+const encounterTemplates=[
   {id:'butterfly',x:590,y:590,name:'Una mariposa de miel',action:'Observar la mariposa',symbol:'ʚɞ',text:'Una mariposa descansa junto al sendero. Abre sus alas despacito. Podemos acompañarla un momento, sin tener que hacer nada más.'},
   {id:'leaf',x:720,y:430,name:'Una hoja viajera',action:'Mirar la hoja',symbol:'❧',text:'Una hoja gira y encuentra dónde descansar. Si te apetece, sigue su pequeño recorrido con la mirada. No hay prisa por llegar.'},
   {id:'stone',x:920,y:650,name:'Una piedrita de luna',action:'Mirar su brillo',symbol:'◈',text:'Entre la hierba hay una piedrita lisa que recoge la luz. Hasta los días más grandes pueden tener un detalle pequeño y bonito.'},
   {id:'wish',x:940,y:265,name:'Un deseo entre las ramas',action:'Guardar este instante',symbol:'✧',text:'Luci encontró un rincón desde donde se ve el cielo. Este ratito es para ti, Isis. Besito en tu pollollo.'}
+  ,{id:'snail',name:'Un caracol diminuto',action:'Acompañar al caracol',symbol:'＠',text:'Un caracol avanza sobre una hoja. Su camino también cuenta, aunque sea pequeñito.'},
+  {id:'feather',name:'Una pluma del bosque',action:'Mirar la pluma',symbol:'❦',text:'Una pluma quedó entre las flores. Puedes imaginar el viaje del pájaro que pasó por aquí.'},
+  {id:'petals',name:'Pétalos para un mandala',action:'Crear con pétalos',symbol:'❀',text:'Toca los pétalos para formar una composición. Puedes cambiarla todas las veces que quieras.'},
+  {id:'constellation',name:'Un cielo por dibujar',action:'Unir las estrellas',symbol:'☆',text:'Elige estrellas para trazar tu propio dibujo. Aquí ninguna constelación está equivocada.'},
+  {id:'trail',name:'El paseo de una mariposa',action:'Seguir su vuelo',symbol:'ʚɞ',text:'La mariposa se ha posado más adelante. Puedes seguirla a tu ritmo; te esperará.'},
+  {id:'envelope',name:'Un sobre escondido',action:'Abrir el sobre',symbol:'♡',text:'Unas palabras te estaban esperando entre las hojas.'}
 ];
+let encounters=dailyEncounters(encounterTemplates,dayKey());
 const validFinds=value=>Array.isArray(value)?[...new Set(value.filter(id=>encounters.some(e=>e.id===id)))]:[];
 const SAVE_KEY='isis-game-v2';
 const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');
-let data = { entered:false, beds:{flowers:0,daisies:0}, plots:restorePlots(null), memories:[], day:false, motionPaused:false, finds:[] };
+let data = { entered:false, beds:{flowers:0,daisies:0}, plots:restorePlots(null), memories:[], day:false, motionPaused:false, finds:[],...restoreExtras() };
 try {
   const saved=JSON.parse(localStorage.getItem(SAVE_KEY)||localStorage.getItem('isis-game-v1')||'null');
-  if(saved&&typeof saved==='object') data={entered:saved.entered===true,beds:{flowers:[0,1,2,3].includes(saved.beds?.flowers)?saved.beds.flowers:0,daisies:[0,1,2,3].includes(saved.beds?.daisies)?saved.beds.daisies:0},plots:restorePlots(saved.plots,saved.beds),position:restorePosition(saved.position),facing:['up','down','left','right'].includes(saved.facing)?saved.facing:'down',finds:validFinds(saved.finds),memories:Array.isArray(saved.memories)?saved.memories.filter(id=>stations.some(s=>s.id===id)):[],day:saved.day===true,motionPaused:saved.motionPaused===true};
+  if(saved&&typeof saved==='object') data={...restoreExtras(saved),entered:saved.entered===true,beds:{flowers:[0,1,2,3].includes(saved.beds?.flowers)?saved.beds.flowers:0,daisies:[0,1,2,3].includes(saved.beds?.daisies)?saved.beds.daisies:0},plots:restorePlots(saved.plots,saved.beds),position:restorePosition(saved.position),facing:['up','down','left','right'].includes(saved.facing)?saved.facing:'down',finds:validFinds(saved.finds),memories:Array.isArray(saved.memories)?saved.memories.filter(id=>stations.some(s=>s.id===id)):[],day:saved.day===true,motionPaused:saved.motionPaused===true};
 } catch {}
+data.keepsakes=[...new Set([...data.keepsakes,...data.finds])];
+renewDay(data);encounters=dailyEncounters(encounterTemplates,data.gardenDate);
 let position=restorePosition(data.position),target=null,arrival=null,nearby=null,keys=new Set(),lastFrame=0,ambientPaused=motionPreference.matches||data.motionPaused;
 let luciPosition={x:position.x+26,y:position.y-36};
 let speed=0,lastVector={x:0,y:1},strideDistance=0,ambientTime=0,facing=data.facing||'down',wasWalking=false,tapBeacon=null;
 let nearbyEncounter=null,noticedEncounter=null,autosaveTime=0;
-function save(){data.position={...position};data.facing=facing;try{localStorage.setItem(SAVE_KEY,JSON.stringify(data));el('game-saved').textContent='Tu paseo está guardado en este dispositivo.';}catch{el('game-saved').textContent='Tu paseo continúa, pero este navegador no permitió guardarlo.';}}
+let dailyCheck=0;
+let restoringBackup=false;
+function save(){if(restoringBackup)return;data.position={...position};data.facing=facing;try{localStorage.setItem(SAVE_KEY,JSON.stringify(data));el('game-saved').textContent='Tu paseo está guardado en este dispositivo.';}catch{el('game-saved').textContent='Tu paseo continúa, pero este navegador no permitió guardarlo.';}}
 function say(text,speaker='Luci, la luciérnaga'){
   el('speaker').textContent=speaker;el('game-message').textContent=text;
   el('luci-preview').textContent=text;el('luci-announcement').textContent=text;
@@ -62,13 +75,14 @@ function scenery(){
   stations.forEach(s=>{const node=el(`station-${s.id}`);node.addEventListener('click',e=>{e.stopPropagation();walkTo(s);});node.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();walkTo(s);}});});
   el('map-effects').innerHTML=Array.from({length:18},(_,i)=>`<circle class="ambient-mote" cx="${100+(i*157)%1200}" cy="${130+(i*103)%620}" r="${i%3===0?2:1.2}" fill="#e5d697" opacity=".6" style="animation-delay:-${i%6}s"/>`).join('')+[[520,410],[830,275],[1080,700]].map(([x,y],i)=>`<g transform="translate(${x} ${y})"><g class="garden-butterfly" style="animation-delay:-${i*3}s"><g fill="${['#dbc491','#c6b2ba','#c1cbb3'][i]}" opacity=".85"><path class="butterfly-left" d="M0 0Q-16-23-16-5Q-18 8-2 4"/><path class="butterfly-right" d="M0 0Q16-23 16-5Q18 8 2 4"/></g><path d="M0-8V7" stroke="#5f6048" stroke-width="2"/></g></g>`).join('')+'<g id="tap-beacon" class="tap-beacon"><ellipse class="tap-ring" rx="18" ry="10" fill="none" stroke="#eddda6" stroke-width="1.5"/><circle r="2" fill="#eddda6"/></g><g id="luci" aria-hidden="true"><circle class="luci-halo" r="34" fill="url(#lamp-glow)"/><ellipse class="luci-wing" cx="-5" cy="-4" rx="5" ry="3" fill="#f6e8bb" opacity=".55"/><ellipse class="luci-wing" cx="5" cy="-4" rx="5" ry="3" fill="#f6e8bb" opacity=".55"/><circle r="4" fill="#f4db85"/><circle r="2" fill="#fff5cb"/></g>';
   tapBeacon=el('tap-beacon');
+  el('garden-encounters')?.remove();
   const layer=document.createElementNS('http://www.w3.org/2000/svg','g');layer.id='garden-encounters';
   layer.innerHTML=encounters.map(e=>`<g class="garden-encounter" id="encounter-${e.id}" role="button" tabindex="0" aria-label="Acercarme: ${e.name}" transform="translate(${e.x} ${e.y})"><ellipse class="encounter-glow" rx="27" ry="16"/><text class="encounter-symbol" text-anchor="middle" y="5">${e.symbol}</text></g>`).join('')+Array.from({length:9},(_,i)=>`<g transform="translate(${420+i*65} ${560+(i%3)*35})"><path class="wandering-leaf" style="animation-delay:-${i}s" d="M-6 0Q0-12 8-4Q6 7-6 0M-4 0L6-3"/></g>`).join('');
   svg.insertBefore(layer,el('map-effects'));
   encounters.forEach(e=>{const node=el(`encounter-${e.id}`);node.onclick=event=>{event.stopPropagation();walkTo(e);};node.onkeydown=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();walkTo(e);}};});
   renderBeds();
 }
-function renderBeds(){el('map-plants').innerHTML=['flowers','daisies'].map(id=>{const s=stations.find(s=>s.id===id);let art=`<g transform="translate(${s.x} ${s.y-65})"><ellipse cy="13" rx="93" ry="45" fill="#152e26" opacity=".25"/><path d="M-87-7Q-85-44 0-44Q85-44 87-7V9Q79 47 0 47Q-80 47-87 9Z" fill="#9a7a56"/><path d="M-87 1Q-67 35 0 35Q68 35 87 1" fill="none" stroke="#c0a477" stroke-width="4"/><ellipse cy="-8" rx="86" ry="35" fill="#5b4937" stroke="#b79a6e" stroke-width="5"/>`;for(let i=0;i<8;i++){const x=-57+(i%4)*38,y=-15+Math.floor(i/4)*26,slot=data.plots[id][i];art+=`<g transform="translate(${x} ${y}) scale(.58)">${slot?bloomSVG(slot.type,slot.stage):'<ellipse cy="9" rx="18" ry="7" fill="#3e382c"/><path d="M-6 9H6M0 3v12" stroke="#a28b60" opacity=".5"/>'}</g>`;}return art+'<path d="M92 5v-37" stroke="#98815b" stroke-width="3"/><path d="M78-38h30v16H78Z" fill="#c0a77d"/><path d="M85-30h16" stroke="#7d7953" stroke-width="2"/></g>';}).join('');}
+function renderBeds(){el('map-plants').innerHTML=['flowers','daisies'].map(id=>{const s=stations.find(s=>s.id===id);let art=`<g transform="translate(${s.x} ${s.y-65})"><ellipse cy="13" rx="93" ry="45" fill="#152e26" opacity=".25"/><path d="M-87-7Q-85-44 0-44Q85-44 87-7V9Q79 47 0 47Q-80 47-87 9Z" fill="#9a7a56"/><path d="M-87 1Q-67 35 0 35Q68 35 87 1" fill="none" stroke="#c0a477" stroke-width="4"/><ellipse cy="-8" rx="86" ry="35" fill="#5b4937" stroke="#b79a6e" stroke-width="5"/>`;for(let i=0;i<8;i++){const x=-57+(i%4)*38,y=-15+Math.floor(i/4)*26,slot=data.plots[id][i];art+=`<g transform="translate(${x} ${y}) scale(.58)">${slot?bloomSVG(slot.type,slot.stage):'<ellipse cy="9" rx="18" ry="7" fill="#3e382c"/><path d="M-6 9H6M0 3v12" stroke="#a28b60" opacity=".5"/>'}</g>`;}if(data.plots[id].some(slot=>slot?.type==='daisy'&&slot.stage===3))art+='<g transform="translate(45 -66)"><g class="garden-butterfly"><path class="butterfly-left" d="M0 0Q-16-23-16-5Q-18 8-2 4" fill="#e4c6ac"/><path class="butterfly-right" d="M0 0Q16-23 16-5Q18 8 2 4" fill="#e4c6ac"/><path d="M0-5V6" stroke="#6b7051" stroke-width="2"/></g></g>';return art+'<path d="M92 5v-37" stroke="#98815b" stroke-width="3"/><path d="M78-38h30v16H78Z" fill="#c0a77d"/><path d="M85-30h16" stroke="#7d7953" stroke-width="2"/></g>';}).join('');}
 const gardening=createGardening({
   getPlots:id=>data.plots[id],
   updateSlot:(id,index,slot)=>{data.plots[id][index]=slot;data.beds[id]=Math.max(0,...data.plots[id].map(item=>item?.stage||0));renderBeds();save();},
@@ -85,10 +99,10 @@ function activity(panel){stop();const dialog=el('activity-dialog');dialog.datase
 function interact(s=nearby){
   if(!s)return;
   stop();
-  if(encounters.includes(s)){
-    if(!data.finds.includes(s.id)){data.finds.push(s.id);save();renderBackpack();}
+  if(encounters.some(e=>e.id===s.id)){
+    if(!data.finds.includes(s.id)){data.finds.push(s.id);if(!data.keepsakes.includes(s.id))data.keepsakes.push(s.id);save();renderBackpack();}
     el('discovery-title').textContent=s.name;el('discovery-text').textContent=s.text;el('discovery-symbol').textContent=s.symbol;
-    el('discovery-dialog').showModal();say('Lo guardé en tus pequeños encuentros. Podemos volver cuando quieras.');
+    renderDiscovery(s);el('discovery-dialog').showModal();say('Lo guardé en tus pequeños encuentros. Podemos volver cuando quieras.');
   }else if(s.id==='flowers'||s.id==='daisies'){
     gardening.open(s.id);say('Aquí puedes elegir qué sembrar y darle un lugar a cada flor.');
   }else if(s.id==='letter'){remember(s.id);el('letter-open').click();}
@@ -98,7 +112,7 @@ function interact(s=nearby){
 }
 let contextSignature='';
 function updateContext(){nearby=nearestStation(position,stations,82)||nearestStation(position,encounters,68);const signature=`${nearby?.id||''}:${arrival?.id||''}:${data.beds[nearby?.id]||0}`;if(signature===contextSignature)return;contextSignature=signature;const button=el('game-interact');button.disabled=!nearby;el('nearby-label').textContent=nearby?nearby.name:'Toca el camino para caminar';el('game-location').textContent=nearby?nearby.name.toUpperCase():'EL JARDÍN DE LOS PEQUEÑOS COMIENZOS';let action=nearby?.action||'Acércate a un rincón';if(nearby&&['flowers','daisies'].includes(nearby.id))action='Cuidar este rincón';button.replaceChildren(document.createTextNode(action+' '));const kbd=document.createElement('kbd');kbd.textContent='E';button.append(kbd);stations.forEach(s=>{el(`station-${s.id}`).classList.toggle('nearest',s===nearby);el(`station-${s.id}`).classList.toggle('guiding',s===arrival);});}
-function renderBackpack(){el('encounter-journal').textContent=data.finds.length?'En este paseo has encontrado: '+data.finds.map(id=>encounters.find(e=>e.id===id).name.toLowerCase()).join(' · ')+'.':'Luci guardará aquí los pequeños encuentros que elijas mirar durante tus paseos.';el('map-destinations').replaceChildren();stations.forEach(s=>{const button=document.createElement('button');button.textContent=`${s.icon} ${s.name}`;const status=document.createElement('span');status.textContent=data.memories.includes(s.id)?`♡ ${s.memory}`:'Un rincón por descubrir';button.append(status);button.onclick=()=>{el('backpack').close();walkTo(s);};el('map-destinations').append(button);});}
+function renderBackpack(){el('daily-destinations').replaceChildren();encounters.forEach(e=>{const b=document.createElement('button');b.textContent=e.symbol+' '+e.name;b.onclick=()=>{el('backpack').close();walkTo(e);};el('daily-destinations').append(b);});el('encounter-journal').textContent=data.finds.length?'En este paseo has encontrado: '+data.finds.map(id=>encounters.find(e=>e.id===id).name.toLowerCase()).join(' · ')+'.':'Luci guardará aquí los pequeños encuentros que elijas mirar durante tus paseos.';el('map-destinations').replaceChildren();stations.forEach(s=>{const button=document.createElement('button');button.textContent=`${s.icon} ${s.name}`;const status=document.createElement('span');status.textContent=data.memories.includes(s.id)?`♡ ${s.memory}`:'Un rincón por descubrir';button.append(status);button.onclick=()=>{el('backpack').close();walkTo(s);};el('map-destinations').append(button);});}
 let viewport={width:840,height:540},cameraDirty=true,frameId=0;
 const resizeObserver=new ResizeObserver(entries=>{const {width,height}=entries[0].contentRect;viewport={width,height};cameraDirty=true;});resizeObserver.observe(svg);
 function camera(){const b=cameraBounds(position,viewport.width,viewport.height);svg.setAttribute('viewBox',`${b.x} ${b.y} ${b.width} ${b.height}`);cameraDirty=false;}
@@ -122,13 +136,16 @@ function loop(time){
   if(walking||cameraDirty)player.setAttribute('transform',`translate(${position.x} ${position.y})`);player.classList.toggle('walking',walking);
   actor.render({direction:facing,distance:strideDistance,time:ambientTime,delta:dt,walking,muted:ambientPaused||modal});
   nearbyEncounter=data.entered?nearestStation(position,encounters,110):null;
-  if(!modal&&nearbyEncounter?.id!==noticedEncounter){noticedEncounter=nearbyEncounter?.id||null;if(nearbyEncounter&&!data.finds.includes(nearbyEncounter.id))say('Isis, mira… '+nearbyEncounter.name.toLowerCase()+'. Acércate si te apetece.');}
+  if(!modal&&nearbyEncounter?.id!==noticedEncounter){noticedEncounter=nearbyEncounter?.id||null;if(nearbyEncounter&&!data.finds.includes(nearbyEncounter.id))say(['Isis, mira… ','Hay algo bonito por aquí: ','¿Lo ves entre las hojas? '][encounters.indexOf(nearbyEncounter)%3]+nearbyEncounter.name.toLowerCase()+'. Acércate si te apetece.');}
   encounters.forEach(e=>el(`encounter-${e.id}`).classList.toggle('noticed',nearbyEncounter===e));
+  stage.classList.toggle('flowers-aware',Math.hypot(position.x-470,position.y-510)<125||Math.hypot(position.x-780,position.y-340)<125);
+  el('luci').classList.toggle('luci-discovering',!!nearbyEncounter);
   const t=ambientTime;
   const guide=nearbyEncounter?{x:position.x+(nearbyEncounter.x-position.x)*.45,y:position.y+(nearbyEncounter.y-position.y)*.45-18}:{x:position.x+27,y:position.y-38};
-  if(!modal)luciPosition=dampPoint(luciPosition,{x:guide.x+Math.sin(t)*9,y:guide.y+Math.cos(t*.7)*6},7,dt);
+  if(!modal)luciPosition=dampPoint(luciPosition,{x:guide.x+Math.sin(t)*9,y:guide.y+(walking||nearbyEncounter?Math.cos(t*.7)*6:22)},7,dt);
   el('luci').setAttribute('transform',`translate(${luciPosition.x} ${luciPosition.y})`);
   if(tapBeacon){tapBeacon.classList.toggle('active',!!target&&!modal);if(target)tapBeacon.setAttribute('transform',`translate(${target.x} ${target.y})`);}
+  dailyCheck+=dt;if(dailyCheck>15){dailyCheck=0;checkDay();}
   autosaveTime+=dt;if(walking&&autosaveTime>=2){save();autosaveTime=0;}
   if(wasWalking&&!walking)save();wasWalking=walking;
   if(walking||cameraDirty)camera();updateContext();frameId=requestAnimationFrame(loop);
@@ -136,7 +153,7 @@ function loop(time){
 svg.addEventListener('click',e=>{if(!data.entered||document.querySelector('dialog[open]'))return;setLuci(false);const matrix=svg.getScreenCTM();if(!matrix)return;const point=new DOMPoint(e.clientX,e.clientY).matrixTransform(matrix.inverse());target=clampPoint(point);arrival=null;});
 const keyMap={ArrowUp:'up',w:'up',W:'up',ArrowDown:'down',s:'down',S:'down',ArrowLeft:'left',a:'left',A:'left',ArrowRight:'right',d:'right',D:'right'};
 window.addEventListener('keydown',e=>{if(!data.entered||document.querySelector('dialog[open]')||/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName))return;if(keyMap[e.key]){e.preventDefault();keys.add(keyMap[e.key]);}if((e.key==='e'||e.key==='E')&&!e.repeat){e.preventDefault();interact();}});
-window.addEventListener('keyup',e=>{if(keyMap[e.key]){keys.delete(keyMap[e.key]);if(!keys.size)save();}});window.addEventListener('blur',stop);document.addEventListener('visibilitychange',()=>{if(document.hidden){stop();stage.classList.add('scene-paused');cancelAnimationFrame(frameId);lastFrame=0;}else{lastFrame=0;frameId=requestAnimationFrame(loop);}});
+window.addEventListener('keyup',e=>{if(keyMap[e.key]){keys.delete(keyMap[e.key]);if(!keys.size)save();}});window.addEventListener('blur',stop);document.addEventListener('visibilitychange',()=>{if(document.hidden){stop();stage.classList.add('scene-paused');cancelAnimationFrame(frameId);lastFrame=0;}else{checkDay();lastFrame=0;frameId=requestAnimationFrame(loop);}});
 document.querySelectorAll('[data-move]').forEach(button=>{button.onpointerdown=e=>{e.preventDefault();button.setPointerCapture(e.pointerId);keys.add(button.dataset.move);};button.onpointerup=button.onpointercancel=button.onlostpointercapture=()=>{keys.delete(button.dataset.move);save();};});
 document.querySelectorAll('[data-move]').forEach(button=>button.addEventListener('contextmenu',event=>event.preventDefault()));
 el('enter-garden').onclick=()=>{data.entered=true;el('game-welcome').hidden=true;save();say('Toca las flores o sigue mi luz. Tus primeros girasoles te esperan.');document.activeElement?.blur();};
@@ -154,9 +171,36 @@ let ripples=0;const pondPrompts=['Si te apetece, encuentra un color que te guste
 el('pond-water').onclick=()=>{ripples++;el('pond-water').classList.remove('ripple');requestAnimationFrame(()=>el('pond-water').classList.add('ripple'));el('pond-prompt').textContent=pondPrompts[Math.min(ripples-1,3)];el('pond-caption').textContent=ripples>=3?'Una onda se va. Puedes quedarte o dejarla ir.':'Cada onda puede ser una pequeña pausa.';if(ripples>=3)remember('pond');};
 el('pond-again').onclick=()=>{ripples=0;el('pond-prompt').textContent='Toca el agua y observa cómo se abre una onda. Si te apetece, busca un color a tu alrededor.';el('pond-caption').textContent='Puedes quedarte aquí todo lo que quieras.';};
 el('canvas').addEventListener('pointerup',()=>remember('art'));document.querySelectorAll('.star-button').forEach(button=>button.addEventListener('click',()=>{if(document.querySelectorAll('.star-button.found').length===5)remember('stars');}));
-document.querySelectorAll('dialog').forEach(dialog=>dialog.addEventListener('close',()=>{keys.clear();document.activeElement?.blur();}));
+document.querySelectorAll('dialog').forEach(dialog=>dialog.addEventListener('close',()=>{keys.clear();document.activeElement?.blur();checkDay();}));
 window.addEventListener('pagehide',stop);
 el('close-discovery').onclick=()=>el('discovery-dialog').close();
-scenery();setTime();setMotion();renderBackpack();updateGuide();el('game-welcome').hidden=data.entered;frameId=requestAnimationFrame(loop);
+scenery();renderDecorations();setTime();setMotion();renderBackpack();updateGuide();el('game-welcome').hidden=data.entered;frameId=requestAnimationFrame(loop);
 
 if(data.entered)say('Bienvenida de vuelta, Isis. Te guardé tu lugar; seguimos cuando quieras.');
+
+function checkDay(){
+ if(document.querySelector('dialog[open]'))return;
+ if(renewDay(data)){stop();encounters=dailyEncounters(encounterTemplates,data.gardenDate);noticedEncounter=null;trailStep=0;contextSignature='';scenery();renderDecorations();renderBackpack();save();say('Un nuevo día, Isis. La tierra vuelve a estar lista y el sendero guarda otras sorpresas.');}
+}
+function renderDecorations(){
+ let layer=el('garden-decorations');if(!layer){layer=document.createElementNS('http://www.w3.org/2000/svg','g');layer.id='garden-decorations';layer.setAttribute('aria-hidden','true');svg.insertBefore(layer,el('map-stations'));}
+ const art={pot:'<path d="M-14-2H14L10 19H-10Z" fill="#bd9271"/><path d="M0-2V-23M0-11Q-18-27-17-13Q-12-5 0-11M0-17Q15-32 17-20Q14-10 0-17" fill="#96ac7d" stroke="#77925f"/>',lamp:'<circle cy="-24" r="36" fill="url(#lamp-glow)"/><path d="M0 16V-35" stroke="#9e8f69" stroke-width="4"/><rect x="-8" y="-36" width="16" height="20" rx="5" fill="#edcf83"/>',bench:'<path d="M-25-12H25M-25-3H25M-28 8H28M-20 8V24M20 8V24" stroke="#c2a47d" stroke-width="7"/>',stone:'<ellipse rx="20" ry="11" fill="#bab89b"/><ellipse cx="15" cy="8" rx="12" ry="8" fill="#929e89"/>'};
+ layer.innerHTML=data.decorations.map(d=>`<g transform="translate(${d.x} ${d.y})"><ellipse cy="21" rx="25" ry="6" fill="#15372b" opacity=".2"/>${art[d.type]}</g>`).join('');
+}
+let trailStep=0;
+function renderDiscovery(s){
+ const play=el('discovery-play');play.replaceChildren();
+ if(s.id==='envelope')el('discovery-text').textContent='Isis, este jardín guarda un lugar para ti. Besito en tu pollollo.';
+ if(s.id==='petals'||s.id==='constellation'){
+  const sky=s.id==='constellation';play.className=sky?'little-sky':'petal-mandala';
+  const drawing=document.createElementNS('http://www.w3.org/2000/svg','svg');drawing.setAttribute('viewBox','0 0 240 200');drawing.setAttribute('preserveAspectRatio','none');drawing.setAttribute('aria-hidden','true');play.append(drawing);let points=[];
+  const coords=[[120,22],[187,55],[202,125],[157,178],[80,174],[35,118],[52,52]];
+  coords.forEach(([x,y],i)=>{const b=document.createElement('button');b.className='discovery-choice';b.textContent=sky?'✧':'❀';b.setAttribute('aria-label',(sky?'Estrella ':'Pétalo ')+(i+1));b.style.left=x/240*100+'%';b.style.top=y+'px';b.setAttribute('aria-pressed','false');b.onclick=()=>{b.classList.toggle('chosen');if(sky){points=points.filter(p=>p[0]!==x||p[1]!==y);if(b.classList.contains('chosen'))points.push([x,y]);drawing.innerHTML=`<polyline points="${points.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#e4c577" stroke-width="2"/>`;}b.setAttribute('aria-pressed',String(b.classList.contains('chosen')));};play.append(b);});
+  const reset=document.createElement('button');reset.className='play-reset';reset.textContent='Nuevo dibujo';reset.onclick=()=>{points=[];drawing.replaceChildren();play.querySelectorAll('[aria-pressed]').forEach(b=>{b.classList.remove('chosen');b.setAttribute('aria-pressed','false');});};play.append(reset);
+ }else{play.className='';}
+ if(s.id==='trail'){
+  if(trailStep===2)el('discovery-text').textContent='La mariposa encontró un claro y se queda contigo. Puedes descansar aquí o dar otro paseo con ella.';
+  const b=document.createElement('button');b.className='discovery-action';b.textContent=trailStep>=2?'Volver a pasear con ella':'Seguir a la mariposa';b.onclick=()=>{el('discovery-dialog').close();trailStep=(trailStep+1)%3;const base=dailyEncounters(encounterTemplates,data.gardenDate).find(e=>e.id==='trail');const next={...base,...clampPoint({x:base.x+(trailStep===1?65:trailStep===2?-40:0),y:base.y+(trailStep===1?-35:trailStep===2?45:0)})};Object.assign(encounters.find(e=>e.id==='trail'),next);el('encounter-trail').setAttribute('transform',`translate(${next.x} ${next.y})`);walkTo({...next,trail:true});};play.append(b);
+ }
+}
+createExtras({getData:()=>data,save,position:()=>({...position}),renderDecorations,stop,beforeRestore:value=>{restoringBackup=value;}});
