@@ -1,4 +1,4 @@
-export const WORLD = { width: 1400, height: 900, margin: 65 };
+export const WORLD = { width: 3000, height: 2000, margin: 65 };
 export function clampPoint(point) {
   return { x: Math.max(WORLD.margin, Math.min(WORLD.width - WORLD.margin, point.x)), y: Math.max(WORLD.margin, Math.min(WORLD.height - WORLD.margin, point.y)) };
 }
@@ -15,9 +15,9 @@ export function nearestStation(point, stations, radius = 100) {
   return stations.map(station => ({ station, distance: Math.hypot(point.x - station.x, point.y - station.y) })).filter(item => item.distance <= radius).sort((a, b) => a.distance - b.distance)[0]?.station || null;
 }
 
-export function cameraBounds(position, width, height) {
+export function cameraBounds(position, width, height, zoom=1) {
   const ratio=Math.max(1,width)/Math.max(1,height);
-  let h=ratio<1?660:590,w=h*ratio;
+  let h=(ratio<1?660:590)/Math.max(.65,Math.min(1.25,zoom)),w=h*ratio;
   if(w>WORLD.width){w=WORLD.width;h=w/ratio;}
   if(h>WORLD.height){h=WORLD.height;w=h*ratio;}
   const x=Math.max(0,Math.min(WORLD.width-w,position.x-w/2));

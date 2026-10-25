@@ -40,7 +40,7 @@ for (const path of ['/', '/el-jardin/']) {
     w.listeners.install({ waitUntil: promise => { work = promise; } });
     await work;
     w.state.offline = true;
-    for (const file of ['./', 'index.html', 'app.js', 'style.css', 'game.js', 'game.css', 'game-core.js', 'gardening.js', 'gardening-core.js', 'daily-core.js', 'extras.js', 'motion.js', 'illustration.js', 'atmosphere.css', 'gardening.css', 'audio.js', 'soundscape.js', 'pwa.js', 'manifest.webmanifest', 'icons/icon-512.png']) {
+    for (const file of ['./', 'index.html', 'app.js', 'style.css', 'game.js', 'game.css', 'game-core.js', 'gardening.js', 'gardening-core.js', 'world-layout.js', 'world-art.js', 'world-map.js', 'world-map.css', 'game-menus.js', 'game-menus.css', 'phase-two.js', 'phase-two-core.js', 'phase-two-art.js', 'phase-two.css', 'daily-core.js', 'extras.js', 'motion.js', 'illustration.js', 'atmosphere.css', 'gardening.css', 'audio.js', 'soundscape.js', 'pwa.js', 'manifest.webmanifest', 'icons/icon-512.png']) {
       let response;
       w.listeners.fetch({ request: { url: new URL(file, scope).href, method: 'GET' }, respondWith: value => { response = value; } });
       assert.match(await response, /^cached:/);

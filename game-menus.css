@@ -1,0 +1,89 @@
+/* Menus are objects in the garden: pockets, wooden trays and a field notebook. */
+:root{--menu-wood:#978267;--menu-trim:#b6a482;--menu-paper:#f1ecd9;--menu-ink:#3c5745}
+dialog{border:3px solid var(--menu-trim)!important;box-shadow:0 0 0 2px #75694e,0 20px 70px #092b2b66!important;background-color:var(--menu-paper);background-image:radial-gradient(#94876a0d .7px,transparent .7px);background-size:7px 7px}
+dialog button:focus-visible{outline:3px solid #9a7139;outline-offset:3px}
+dialog [hidden]{display:none!important}
+#backpack{width:min(720px,calc(100vw - 24px));max-width:720px;height:min(720px,calc(100dvh - 32px));max-height:calc(100dvh - 32px);padding:0;overflow:hidden;border-radius:24px;text-align:left}
+#backpack[open]{display:grid;grid-template-rows:auto auto minmax(0,1fr) auto}
+.menu-heading{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:none;padding:19px 22px 16px;margin:0;background:linear-gradient(110deg,#536e54,#3b5947);border:0;border-bottom:5px solid #b29a70;color:#f5e8c6;gap:16px}
+.menu-heading .eyebrow{font-size:8px;color:#d7d9b5;letter-spacing:2px}.menu-heading h2,#backpack .menu-heading h2{margin:4px 0 0;font:30px/1.1 var(--serif);color:#f5e8c6}
+.menu-close{border:1px solid #d8d3aa77;background:#e9ddb21a;color:#f8e9c2;border-radius:50%;width:44px;height:44px;flex:0 0 44px;font:26px/1 var(--serif);padding:0}
+.inventory-tabs{display:flex;align-items:stretch;gap:5px;padding:12px 15px 0;margin:0;border:0;border-bottom:2px solid #bda984;background:#d4c6a5}
+.inventory-tabs button{flex:1;min-width:0;min-height:46px;padding:10px 8px;border:1px solid #b4a17c;border-bottom:0;border-radius:12px 12px 0 0;font:500 12px/1.3 'DM Sans',sans-serif;color:#5b6349;background:#c3b68f;box-shadow:inset 0 2px 0 #e9dfc17a;white-space:normal}
+.inventory-tabs button[aria-selected=true]{background:var(--menu-paper);color:#354f3c;transform:translateY(2px);box-shadow:inset 0 3px 0 #fff9de;border-color:#b39a6c}
+.inventory-content{overflow:auto;overscroll-behavior:contain;min-height:0;padding:16px 18px 20px;scrollbar-width:thin}
+.pocket-hint{font:italic 14px/1.5 var(--serif);text-align:center;color:#7b8063;margin:0 0 15px}
+#map-destinations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0}
+#map-destinations button{display:grid;grid-template-columns:45px minmax(0,1fr);align-items:center;gap:4px 10px;min-width:0;min-height:84px;padding:12px;background:linear-gradient(135deg,#e9e8d3,#dde2c8);border:1px solid #b9c0a0;border-radius:15px;box-shadow:0 3px 0 #b3bb9744;text-align:left}
+.destination-art{display:grid!important;place-items:center;width:44px;height:44px;border-radius:12px;background:#879c7230;grid-row:1/3;margin:0!important;color:#5b774f!important}
+.destination-art svg{display:block;width:33px;height:33px;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;fill:none}
+#map-destinations strong{font:500 13px/1.3 'DM Sans',sans-serif;color:#3c5942}
+#map-destinations button>span:last-child:not(.destination-art){display:block;font:10px/1.35 'DM Sans',sans-serif;color:#7b8768;margin:0}
+#daily-destinations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 18px}
+#daily-destinations button{min-height:64px;padding:12px;border-radius:14px;background:#e9dfbd;border-color:#c5b485;font:12px/1.45 'DM Sans',sans-serif;box-shadow:0 3px 0 #b8a57633}
+#encounter-journal{font-size:11px;line-height:1.7;color:#768267;padding:12px;background:#e4e6d133;border-top:1px dashed #b5b692}
+.daily-note{display:block;font-size:11px;color:#7b8063;line-height:1.6}
+.inventory-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:16px 8px 24px}
+.inventory-items button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-width:0;min-height:150px;padding:18px 10px;border:1px solid #b7af89;border-radius:20px;background:radial-gradient(ellipse at 50% 30%,#f5e8bb,#ded9b9);color:#496243;box-shadow:inset 0 3px 0 #fff8db,0 4px 0 #bdb18b;font:500 14px 'DM Sans',sans-serif}
+.inventory-items svg{width:65px;height:65px;stroke:#667e55;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;fill:none;filter:drop-shadow(0 3px 0 #f6efda)}
+.inventory-items button:hover{background:#eee1b5}.inventory-items button:active{transform:translateY(2px);box-shadow:inset 0 1px 0 #fff8db,0 2px 0 #bdb18b}
+#pocket-settings .backpack-actions{display:grid;grid-template-columns:1fr;gap:12px;margin-top:6px}
+#pocket-settings .backpack-actions button{min-height:55px;text-align:left;font-size:13px;border-radius:13px;padding:14px 18px;background:#e1e3cd;border:1px solid #b9c1a1}
+.inventory-footer{display:flex;align-items:center;justify-content:center;gap:10px;border:0;border-top:1px solid #c9bea0;padding:10px 16px;margin:0;background:#e2dac1;color:#77805f;min-height:44px}
+.inventory-footer p{font-size:10px;line-height:1.4;margin:0}.inventory-footer>span{font-size:21px}
+#personalize-dialog{padding:60px 20px 20px;max-height:calc(100dvh - 24px)}
+#personalize-dialog>h2{font-size:28px;margin:10px 0 20px}#personalize-dialog .inventory-tabs{border-radius:12px 12px 0 0;margin:0 -8px 18px}
+#personalize-dialog #pocket-decor>p{font-size:12px;line-height:1.6}
+#pocket-decor>.extras-tools:first-of-type{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#pocket-decor [data-decoration]{min-height:80px;font-size:15px;background:linear-gradient(#ede5ca,#ded8b6);border:1px solid #b6ad83;box-shadow:0 3px 0 #b6ab7f55;border-radius:15px}
+/* A framed activity window, with a fixed title and the tool tray inside. */
+#phase-two-dialog{width:min(850px,calc(100vw - 24px));height:min(780px,calc(100dvh - 24px));max-height:calc(100dvh - 24px);padding:0;overflow:hidden;border-radius:23px;text-align:left;position:fixed}
+#phase-two-dialog[open]{display:grid;grid-template-columns:minmax(0,1fr) 60px;grid-template-rows:auto minmax(0,1fr) auto}
+#phase-two-dialog #close-phase-two{position:static;grid-column:2;grid-row:1;align-self:center;justify-self:center;width:44px;min-width:44px;height:44px;min-height:44px;max-width:44px;padding:0;margin:0;border:1px solid #d5cdab;background:#e5ddbc;border-radius:50%;box-shadow:0 2px 0 #a6986f;color:#5a694b;font-size:0;text-align:center}
+#phase-two-dialog #close-phase-two::after{content:'×';font:26px/1 var(--serif)}
+.phase-menu-heading{grid-column:1;grid-row:1;background:transparent;padding:17px 0 17px 24px;border-bottom:0;min-width:0}
+.phase-menu-heading>.eyebrow{font-size:8px;letter-spacing:1.5px;color:#8a8f6d}
+#phase-two-title{font:29px/1.15 var(--serif);margin:5px 0 0;color:#3c5945}
+#phase-two-body{grid-column:1/-1;grid-row:2;overflow:auto;overscroll-behavior:contain;min-height:0;padding:16px 24px 22px;border-top:2px solid #c2b28b;scrollbar-width:thin;background:linear-gradient(#e3e6d199,#f2eedc55)}
+#phase-two-status{grid-column:1/-1;grid-row:3;max-height:100px;overflow:auto;margin:0;padding:12px 22px;border:0;border-top:1px solid #c2c7a6;border-radius:0;background:#dde2c9;font:12px/1.55 'DM Sans',sans-serif}
+#phase-two-status:empty{display:none}
+.place-help{font-size:11px;color:#788366;margin:0 0 14px;border-bottom:1px dashed #b9c3a2;padding:0 0 10px}
+.place-help summary{min-height:44px;cursor:pointer;display:flex;align-items:center;gap:7px;color:#6a7e56}.place-help summary::before{content:'?';display:inline-grid;place-items:center;width:22px;height:22px;border:1px solid #aebc94;border-radius:50%;font:14px var(--serif)}
+.place-help p{font-size:12px;line-height:1.7;margin:0 0 10px}
+.phase-button{border-radius:14px;box-shadow:0 3px 0 #a9b48a55,inset 0 1px 0 #ffffe7;background:linear-gradient(#e5e8cd,#d4ddbb);border-color:#aabb92}
+.seed-mixer{padding:16px;border:2px solid #b6a67b;background:linear-gradient(110deg,#cbb78f,#dccaa5);box-shadow:inset 0 0 0 3px #e5d4ad,0 4px 0 #a7936c44;border-radius:17px;gap:10px}
+.seed-mixer label{font-size:11px;color:#695e43}.seed-mixer select{background:#f3e8ca;border-color:#af9a70;border-radius:14px;min-height:50px}
+.seed-mixer>.phase-button{background:linear-gradient(#e1e5c1,#baca9e);border-color:#8da275;font-weight:600}
+.phase-card{border-radius:16px;border-color:#bac5a4;background:#ecedda;box-shadow:0 3px 0 #b9c1a144;text-align:center}
+.phase-card h3{font-size:20px}.phase-card p{font-size:12px;line-height:1.7}
+.special-grid{gap:12px}.special-grid .phase-card p{font-size:11px}
+.book-pagination{display:flex;align-items:center;justify-content:center;gap:18px;margin:16px 0 0;min-height:50px}
+.book-pagination button{width:46px;height:46px;border:1px solid #b4a880;background:#e0d3a9;border-radius:50%;color:#5f6949;font-size:20px;box-shadow:0 3px 0 #b5a47a}
+.book-pagination button:disabled{opacity:.35;box-shadow:none;cursor:default}.book-pagination span{font:italic 14px var(--serif);color:#7a8060}
+.paged-gallery{display:block!important;max-width:520px;margin:0 auto!important}.paged-gallery>.phase-card[hidden]{display:none!important}
+.paged-gallery>.phase-card{padding:22px 24px;box-shadow:none;border:0;background:transparent}
+.paged-gallery .phase-illustration svg{height:240px}.paged-gallery .phase-card h3{font-size:25px;margin:12px 0}.paged-gallery .phase-card p{max-width:380px;margin:0 auto 16px}
+#phase-two-dialog[data-place=notebook]{background-color:#e9daba;border-color:#aa8d61!important}
+[data-place=notebook] #phase-two-body{background:repeating-linear-gradient(transparent 0 27px,#b7a88322 28px,transparent 29px),linear-gradient(90deg,#c6b28b55,transparent 18px),#f4ecd6;border-left:12px solid #b8a078;box-shadow:inset 6px 0 12px #907a4d22}
+[data-place=notebook] .phase-illustration{background:radial-gradient(ellipse,#d9dec244,transparent 70%)}
+[data-place=visitors] #phase-two-body{background:radial-gradient(ellipse at 50% 40%,#d4dfb9,transparent 70%),#e4e8d2}
+[data-place=visitors] .paged-gallery .phase-illustration svg{height:250px}
+[data-place=weather] .weather-card{height:190px;border:2px solid #a6b190;box-shadow:0 4px 0 #87976c44}
+[data-place=river] #phase-two-body{background:#dfe6ce}.river-scene{border:3px solid #9eb18a;border-radius:18px}
+.moment-preview{border:3px solid #b7ad85;box-shadow:0 3px 0 #ad9d7433;margin:16px 0;border-radius:17px}
+@media(max-width:600px){
+ #backpack{height:calc(100dvh - 24px);max-height:calc(100dvh - 24px)}.menu-heading{padding:15px 17px 13px}.menu-heading h2,#backpack .menu-heading h2{font-size:27px}
+ .inventory-tabs{padding:9px 9px 0;gap:4px}.inventory-tabs button{font-size:11px;padding:10px 5px}
+ .inventory-content{padding:14px 12px 18px}#map-destinations{gap:9px}#map-destinations button{display:flex;flex-direction:column;justify-content:center;gap:7px;text-align:center;min-height:128px;padding:10px 7px}
+ #map-destinations strong{font-size:12px}.destination-art{width:41px;height:41px}.destination-art svg{width:30px;height:30px}#map-destinations button>span:last-child:not(.destination-art){font-size:9px}
+ .inventory-items{gap:12px;padding:10px 2px 20px}.inventory-items button{min-height:155px}.inventory-items svg{width:58px;height:58px}
+ #phase-two-dialog{height:calc(100dvh - 20px);max-height:calc(100dvh - 20px);width:calc(100vw - 20px)}
+ .phase-menu-heading{padding:15px 0 15px 17px}#phase-two-title{font-size:25px}#phase-two-body{padding:12px 15px 18px}#phase-two-status{font-size:11px;padding:11px 15px;max-height:90px}
+ .paged-gallery>.phase-card{padding:12px 7px}.paged-gallery .phase-illustration svg,[data-place=visitors] .paged-gallery .phase-illustration svg{height:210px}
+ .paged-gallery .phase-card h3{font-size:23px}.special-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .special-grid .phase-card{padding:10px}.special-grid .phase-card h3{font-size:17px}.special-grid .phase-illustration svg{height:105px}.special-grid .phase-card p{display:none}.special-grid .phase-button{font-size:11px;padding:10px 7px}
+ .seed-mixer{grid-template-columns:1fr 1fr;padding:14px;gap:10px}.seed-mixer>.phase-button{grid-column:1/-1}
+ .phase-actions{gap:8px}.phase-button{font-size:12px}.book-pagination{margin:12px 0 0}
+}
+@media(max-width:350px){#map-destinations strong{font-size:11px}.inventory-footer p{font-size:9px}.inventory-items button{min-height:140px}.seed-mixer{grid-template-columns:minmax(0,1fr)}}
+@media(max-height:480px){#backpack,#phase-two-dialog{height:calc(100dvh - 16px);max-height:calc(100dvh - 16px)}.menu-heading{padding:8px 18px}.menu-heading h2,#backpack .menu-heading h2{font-size:23px}.inventory-tabs{padding-top:5px}.phase-menu-heading{padding-top:8px;padding-bottom:8px}#phase-two-title{font-size:23px}.paged-gallery .phase-illustration svg{height:160px}}

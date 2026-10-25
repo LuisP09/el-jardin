@@ -40,6 +40,10 @@ export function createActor(player) {
 }
 
 export const stationIcons = {
+  greenhouse:'<path d="M-10 8V-3L0-11 10-3V8ZM-10-3H10M0-11V8M-10 3H10"/>',
+  visitors:'<path d="M-8 1L-10-9-2-5Q2-7 6-5L11-9 9 3Q6 12-2 9Q-8 7-8 1Z"/><path d="M-4 1h1m7 0h1M0 5h2"/>',
+  river:'<path d="M-11 6q5-5 11 0t11 0M-9-2q9-11 18 0M-9-2v7M9-2v7M-4-5v8M4-5v8"/>',
+  moments:'<path d="M-11 9L-6-2H6L11 9ZM-4-2v-4q4-6 8 0v4M-8 3H8M0-2V9"/>',
   flowers: '<path d="M0 8V-3m0 7q-13-13-11-13Q0-8 0 4m0-7q13-12 10-3Q8 1 0-3"/>',
   daisies: '<circle cy="-2" r="3"/><path d="M0-10v2m0 12v2m-8-8h2m12 0h2M-6-8l2 2m8 8l2 2M-6 4l2-2m8-8l2-2"/>',
   pond: '<path d="M-10-4q5-5 10 0t10 0M-10 3q5-5 10 0t10 0"/>',

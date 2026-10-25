@@ -34,5 +34,5 @@ test('Guardar y restaurar conserva mezclas y estados y descarta datos inválidos
   assert.equal(plotDescription(plots.flowers[0]), 'margarita, primeras hojas');
   assert.deepEqual(restorePosition({ x: 470, y: 510 }), { x: 470, y: 510 });
   assert.deepEqual(restorePosition({ x: NaN, y: null }), { x: 660, y: 690 });
-  assert.deepEqual(restorePosition({ x: -100, y: 9999 }), { x: 65, y: 835 });
+  assert.deepEqual(restorePosition({ x: -100, y: 9999 }), { x: 65, y: 1935 });
 });

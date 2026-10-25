@@ -2,7 +2,7 @@ import { readFile, mkdir, cp, writeFile, stat } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import assert from 'node:assert/strict';
 
-const files = ['index.html', 'style.css', 'app.js', 'game.css', 'game.js', 'game-core.js', 'gardening.js', 'gardening-core.js', 'daily-core.js', 'extras.js', 'motion.js', 'illustration.js', 'atmosphere.css', 'gardening.css', 'audio.js', 'soundscape.js', 'pwa.js', 'sw.js', 'manifest.webmanifest', '.nojekyll', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png'];
+const files = ['index.html', 'style.css', 'app.js', 'game.css', 'game.js', 'game-core.js', 'gardening.js', 'gardening-core.js', 'world-layout.js', 'world-art.js', 'world-map.js', 'world-map.css', 'game-menus.js', 'game-menus.css', 'phase-two.js', 'phase-two-core.js', 'phase-two-art.js', 'phase-two.css', 'daily-core.js', 'extras.js', 'motion.js', 'illustration.js', 'atmosphere.css', 'gardening.css', 'audio.js', 'soundscape.js', 'pwa.js', 'sw.js', 'manifest.webmanifest', '.nojekyll', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png'];
 const manifest = JSON.parse(await readFile('manifest.webmanifest', 'utf8'));
 assert.equal(manifest.start_url, './');
 assert.equal(manifest.scope, './');

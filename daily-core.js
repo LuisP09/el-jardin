@@ -1,17 +1,19 @@
+import {ENCOUNTER_SPOTS} from './world-layout.js';
+import {clampPoint} from './game-core.js';
 export function dayKey(date=new Date()){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;}
 export function renewDay(state,key=dayKey()){
   if(!state.gardenDate){state.gardenDate=key;return false;}
   if(key<=state.gardenDate)return false;
   state.gardenDate=key;state.plots={flowers:Array(8).fill(null),daisies:Array(8).fill(null)};state.beds={flowers:0,daisies:0};state.finds=[];return true;
 }
-const spots=[[590,590],[720,430],[920,650],[940,265],[360,580],[540,300],[830,760],[1120,440],[380,230],[650,740],[1200,730],[850,190]];
+const spots=ENCOUNTER_SPOTS;
 export function dailyEncounters(items,key){
   const day=Math.floor(Date.UTC(...key.split('-').map((n,i)=>Number(n)-(i===1?1:0)))/86400000);
   return items.map((item,i)=>({...item,x:spots[((day%spots.length)+spots.length+i)%spots.length][0],y:spots[((day%spots.length)+spots.length+i)%spots.length][1]}));
 }
 export function restoreExtras(value={}){
   return {gardenDate:/^\d{4}-\d{2}-\d{2}$/.test(value.gardenDate)?value.gardenDate:null,
-    decorations:Array.isArray(value.decorations)?value.decorations.filter(d=>d&&['pot','lamp','bench','stone'].includes(d.type)&&Number.isFinite(d.x)&&Number.isFinite(d.y)).slice(0,30).map(d=>({type:d.type,x:Math.max(90,Math.min(1310,d.x)),y:Math.max(100,Math.min(800,d.y))})):[],
+    decorations:Array.isArray(value.decorations)?value.decorations.filter(d=>d&&['pot','lamp','bench','stone'].includes(d.type)&&Number.isFinite(d.x)&&Number.isFinite(d.y)).slice(0,30).map(d=>({type:d.type,...clampPoint(d)})):[],
     letters:Array.isArray(value.letters)?value.letters.filter(t=>typeof t==='string'&&t.trim()).slice(0,30).map(t=>t.slice(0,600)):[],
     keepsakes:Array.isArray(value.keepsakes)?[...new Set(value.keepsakes.filter(t=>typeof t==='string'))].slice(0,40):[]};
 }

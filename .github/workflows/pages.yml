@@ -26,6 +26,13 @@ jobs:
           node --check game-core.js
           node --check gardening.js
           node --check gardening-core.js
+          node --check world-layout.js
+          node --check world-art.js
+          node --check world-map.js
+          node --check game-menus.js
+          node --check phase-two.js
+          node --check phase-two-core.js
+          node --check phase-two-art.js
           node --check daily-core.js
           node --check extras.js
           node --check motion.js

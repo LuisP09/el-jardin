@@ -28,3 +28,9 @@ document.querySelectorAll('[name="soundscape"]').forEach(input=>{input.checked=i
 document.addEventListener('visibilitychange',()=>{if(document.hidden)audio.background().catch(()=>{});else render();});
 window.addEventListener('pageshow',render);
 render();
+
+// Weather changes reuse the existing crossfade and never start playback.
+document.addEventListener('garden-weather',async event=>{
+ const next=event.detail==='rain'?'rain':event.detail==='river'?'stream':'breeze';
+ try{await audio.select(next);document.querySelectorAll('[name="soundscape"]').forEach(input=>{input.checked=input.value===next;});remember();}catch{$('audio-status').textContent='El cielo cambió. Puedes elegir el sonido desde este panel.';}
+});

@@ -142,3 +142,25 @@ La mochila incluye decoración (hasta 30 objetos, colocados junto a Isis y movib
 Cada nueva fecha local libera ambos parterres y renueva los hallazgos; los diez encuentros cambian de lugar de forma estable durante el día. Decoración, recuerdos permanentes y posición se conservan. La primera apertura de esta actualización conserva las flores existentes. Si la app sigue abierta, el cambio se aplica al volver al jardín, sin interrumpir una actividad. No hay reinicios por reloj atrasado, rachas ni penalizaciones.
 
 Los encuentros incluyen composición de pétalos, dibujo de constelaciones y un paseo de tres paradas tras una mariposa. El ambiente respeta la pausa y el movimiento reducido del sistema.
+
+
+### Segunda fase (solo local, pendiente de revisión)
+
+- Cuatro nuevos destinos del mapa: invernadero, claro de visitantes, sendero del río y rincón compartido.
+- Invernadero con tres semillas, seis combinaciones simétricas y flores permanentes de tres etapas. Repetir una mezcla no duplica ni reinicia la flor.
+- Miso siempre puede visitar; Nube aparece con flores abiertas y Brisa con macetas o farolitos. Acompañar o acariciar guarda una ilustración, sin obligaciones de cuidado.
+- Río explorable con dos orillas, cruce por puente, tres hallazgos y barquitos. Guarda la posición dentro de la zona. Solo mantiene su animación mientras está abierta y visible.
+- Cuaderno ilustrado en la mochila: flores, visitas, hallazgos del jardín y del río, y momentos creados. Los recuerdos permanecen entre días.
+- Picnic, cine y ramo con tres paletas y detalles elegibles (té, fruta, libro; luces, palomitas, manta; lazo, tarjeta, ramas); se pueden guardar en el cuaderno y descargar como postal PNG.
+- Cielo despejado, atardecer, neblina y lluvia a elección. Las transiciones respetan el movimiento reducido. El clima adapta el sonido ya activo sin comenzar la reproducción.
+- El progreso de la segunda fase forma parte de las copias existentes del jardín. Las partidas anteriores reciben valores iniciales válidos sin perder sus flores o recuerdos.
+
+
+### Menús de juego (local)
+
+La mochila tiene compartimentos de rincones, paseos, objetos y ajustes. El cuaderno y los visitantes se recorren por páginas. Las actividades usan cabecera y salida fijas; las instrucciones son desplegables y las herramientas de decoración están separadas de las copias. Las pestañas admiten teclado y los controles mantienen al menos 44 px de alto. El estado completo del proyecto está en [MEMORIA.md](MEMORIA.md).
+
+
+### Mundo ampliado (local)
+
+Mapa de 3000×2000 con seis regiones, destinos ilustrados, caminos conectados, minimapa, vista general y dos distancias de cámara. Elegir un rincón permite seguir los senderos; tocar un área libre va directamente o rodea el agua por un camino corto. Las uniones de los caminos se pintan como una red continua. Las partidas mantienen coordenadas válidas y los objetos de decoración pueden guardarse en las zonas nuevas. Los encuentros diarios usan 24 emplazamientos repartidos por el mundo. Esta ampliación todavía no está publicada.

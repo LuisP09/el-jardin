@@ -1,0 +1,25 @@
+#world-route{fill:none;stroke:#f0ddb0;stroke-width:3;stroke-dasharray:5 10;stroke-linecap:round;opacity:.75;pointer-events:none}
+.world-tools{position:absolute;top:12px;right:12px;z-index:3;display:grid;justify-items:end;gap:8px}
+#world-map-open{display:grid;place-items:center;gap:3px;width:112px;padding:5px 5px 6px;border:2px solid #bba777;border-radius:14px;background:#1f443ade;box-shadow:0 3px 12px #102b2c44;color:#f0e6bb}
+#garden-mini-svg{display:block;width:96px;height:64px;border-radius:8px;overflow:hidden;opacity:.95}
+#world-map-open>span{font:10px 'DM Sans',sans-serif;letter-spacing:.6px}
+#world-zoom{width:44px;height:44px;border:1px solid #d2c69899;border-radius:13px;background:#254e40dc;color:#f4e8bf;font:26px/1 Georgia;box-shadow:0 2px 0 #173c31}
+#world-map-dialog{width:min(940px,calc(100vw - 24px));max-width:940px;height:min(900px,calc(100dvh - 24px));max-height:calc(100dvh - 24px);padding:0;overflow:hidden;border-radius:24px}
+#world-map-dialog[open]{display:grid;grid-template-rows:auto minmax(0,1fr)}
+.world-map-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;background:#e4d9b7;border-bottom:2px solid #b2a174;text-align:left}
+.world-map-heading h2{margin:5px 0 0;font:28px/1.2 var(--serif)}.world-map-heading .eyebrow{font-size:8px}
+#close-world-map{width:44px;height:44px;flex:0 0 44px;border:1px solid #b5a57c;border-radius:50%;background:#e8e1c7;color:#5a6b4c;font:26px/1 Georgia}
+.world-map-content{overflow:auto;min-height:0;padding:20px;scrollbar-width:thin;background:#eee6ce}
+#garden-overview-svg{display:block;width:100%;height:auto;min-height:200px;border:3px solid #b5a57b;border-radius:18px;overflow:hidden;background:#9eae83}
+.overview-region{font:52px Georgia;fill:#375942;paint-order:stroke;stroke:#e9dfbb88;stroke-width:7px;stroke-linejoin:round}
+.overview-station{cursor:pointer}.overview-station>circle:first-child{fill:#ba9c5f;stroke:#fff1be;stroke-width:11px}.overview-station:focus-visible{outline:12px solid #f7df94}
+#world-map-location{font:italic 19px var(--serif);color:#4a644a;margin:16px 0 5px}.world-map-content>p:not(#world-map-location){font-size:12px;color:#7a8469;margin:8px 0 16px}
+#world-map-destinations{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#world-map-destinations button{min-height:48px;min-width:0;max-width:100%;padding:10px;border:1px solid #b6bf9f;border-radius:13px;background:#e1e4cb;color:#416045;font:12px/1.4 'DM Sans',sans-serif}
+.world-river-shine{animation:world-river-shine 9s ease-in-out infinite alternate}@keyframes world-river-shine{to{opacity:.45;transform:translateY(7px)}}
+.scene-paused .world-river-shine,.paused-ambient .world-river-shine{animation-play-state:paused}.motion-muted .world-river-shine{animation:none}
+@media(max-width:750px){#world-map-open{width:94px}#garden-mini-svg{width:80px;height:54px}.world-tools{top:10px;right:10px;gap:7px}.location-label{max-width:calc(100% - 122px);border-radius:10px;line-height:1.6}.world-map-content{padding:13px}.world-map-heading{padding:16px}.world-map-heading h2{font-size:24px}#world-map-destinations{grid-template-columns:repeat(2,minmax(0,1fr))}.overview-region{font-size:60px}}
+@media(max-height:500px){#world-map-open{display:none}.world-tools{top:9px;right:10px}.location-label{max-width:70%}#world-map-dialog{height:calc(100dvh - 16px)}.world-map-heading{padding:10px 18px}.world-map-content{display:grid;grid-template-columns:1fr 1fr;gap:12px}#garden-overview-svg{grid-column:1;grid-row:1/5}#world-map-destinations{grid-column:2}#world-map-location{margin:0}.world-map-content>p:not(#world-map-location){margin:0}}
+@media(prefers-reduced-motion:reduce){.world-river-shine{animation:none!important}}
+.overview-region{font:80px Georgia;fill:#385c44;stroke:#dce3b666;stroke-width:10px}
+.overview-poi-icon{stroke:#fff1c3;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}

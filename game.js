@@ -1,3 +1,9 @@
+import {PLACES,regionAt,walkablePoint,walkStep,planPath} from './world-layout.js';
+import {drawWorld} from './world-art.js';
+import {createWorldMap} from './world-map.js';
+import {initGameMenus} from './game-menus.js';
+import {restorePhaseTwo} from './phase-two-core.js';
+import {createPhaseTwo} from './phase-two.js';
 import {dayKey,renewDay,dailyEncounters,restoreExtras} from './daily-core.js';
 import {createExtras} from './extras.js';
 import { WORLD, clampPoint, moveTowards, nearestStation, cameraBounds, restorePosition } from './game-core.js';
@@ -9,6 +15,10 @@ const el = id => document.getElementById(id);
 const svg = el('game-map'), player = el('player'), stage = document.querySelector('.game-stage');
 const actor = createActor(player);
 const stations = [
+  {id:'greenhouse',x:610,y:210,icon:'⌂',name:'El invernadero',action:'Combinar semillas',memory:'Una flor que permanece'},
+  {id:'visitors',x:400,y:765,icon:'♡',name:'El claro de los visitantes',action:'Conocer a los visitantes',memory:'Compañía entre flores'},
+  {id:'river',x:1260,y:760,icon:'≈',name:'El sendero del río',action:'Pasear junto al río',memory:'Otro cielo en el agua'},
+  {id:'moments',x:650,y:800,icon:'❀',name:'El rincón compartido',action:'Preparar un momento',memory:'Un ratito para compartir'},
   { id:'flowers', x:470, y:510, icon:'❀', name:'Los girasoles', action:'Sembrar un girasol', memory:'Un pequeño comienzo' },
   { id:'daisies', x:780, y:340, icon:'❁', name:'Las margaritas', action:'Sembrar una margarita', memory:'Flores bajo el cielo' },
   { id:'pond', x:1060, y:690, icon:'◌', name:'El estanque', action:'Sentarme junto al agua', memory:'Un instante presente' },
@@ -17,6 +27,7 @@ const stations = [
   { id:'art', x:1230, y:400, icon:'◌', name:'El taller', action:'Pintar un ratito', memory:'Un trazo a tu manera' },
   { id:'cinema', x:240, y:270, icon:'▷', name:'El cine del bosque', action:'Entrar al pequeño cine', memory:'Una historia compartida' }
 ];
+stations.forEach(s=>Object.assign(s,PLACES[s.id]));
 const encounterTemplates=[
   {id:'butterfly',x:590,y:590,name:'Una mariposa de miel',action:'Observar la mariposa',symbol:'ʚɞ',text:'Una mariposa descansa junto al sendero. Abre sus alas despacito. Podemos acompañarla un momento, sin tener que hacer nada más.'},
   {id:'leaf',x:720,y:430,name:'Una hoja viajera',action:'Mirar la hoja',symbol:'❧',text:'Una hoja gira y encuentra dónde descansar. Si te apetece, sigue su pequeño recorrido con la mirada. No hay prisa por llegar.'},
@@ -33,18 +44,18 @@ let encounters=dailyEncounters(encounterTemplates,dayKey());
 const validFinds=value=>Array.isArray(value)?[...new Set(value.filter(id=>encounters.some(e=>e.id===id)))]:[];
 const SAVE_KEY='isis-game-v2';
 const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');
-let data = { entered:false, beds:{flowers:0,daisies:0}, plots:restorePlots(null), memories:[], day:false, motionPaused:false, finds:[],...restoreExtras() };
+let data = { entered:false, beds:{flowers:0,daisies:0}, plots:restorePlots(null), memories:[], day:false, motionPaused:false, finds:[],phase2:restorePhaseTwo(),...restoreExtras() };
 try {
   const saved=JSON.parse(localStorage.getItem(SAVE_KEY)||localStorage.getItem('isis-game-v1')||'null');
-  if(saved&&typeof saved==='object') data={...restoreExtras(saved),entered:saved.entered===true,beds:{flowers:[0,1,2,3].includes(saved.beds?.flowers)?saved.beds.flowers:0,daisies:[0,1,2,3].includes(saved.beds?.daisies)?saved.beds.daisies:0},plots:restorePlots(saved.plots,saved.beds),position:restorePosition(saved.position),facing:['up','down','left','right'].includes(saved.facing)?saved.facing:'down',finds:validFinds(saved.finds),memories:Array.isArray(saved.memories)?saved.memories.filter(id=>stations.some(s=>s.id===id)):[],day:saved.day===true,motionPaused:saved.motionPaused===true};
+  if(saved&&typeof saved==='object') data={...restoreExtras(saved),phase2:restorePhaseTwo(saved.phase2),entered:saved.entered===true,beds:{flowers:[0,1,2,3].includes(saved.beds?.flowers)?saved.beds.flowers:0,daisies:[0,1,2,3].includes(saved.beds?.daisies)?saved.beds.daisies:0},plots:restorePlots(saved.plots,saved.beds),position:restorePosition(saved.position),facing:['up','down','left','right'].includes(saved.facing)?saved.facing:'down',finds:validFinds(saved.finds),memories:Array.isArray(saved.memories)?saved.memories.filter(id=>stations.some(s=>s.id===id)):[],day:saved.day===true,motionPaused:saved.motionPaused===true};
 } catch {}
 data.keepsakes=[...new Set([...data.keepsakes,...data.finds])];
 renewDay(data);encounters=dailyEncounters(encounterTemplates,data.gardenDate);
-let position=restorePosition(data.position),target=null,arrival=null,nearby=null,keys=new Set(),lastFrame=0,ambientPaused=motionPreference.matches||data.motionPaused;
+let position=walkablePoint(restorePosition(data.position)),target=null,arrival=null,nearby=null,keys=new Set(),lastFrame=0,ambientPaused=motionPreference.matches||data.motionPaused;
 let luciPosition={x:position.x+26,y:position.y-36};
 let speed=0,lastVector={x:0,y:1},strideDistance=0,ambientTime=0,facing=data.facing||'down',wasWalking=false,tapBeacon=null;
 let nearbyEncounter=null,noticedEncounter=null,autosaveTime=0;
-let dailyCheck=0;
+let dailyCheck=0;let route=[],zoom=1;
 let restoringBackup=false;
 function save(){if(restoringBackup)return;data.position={...position};data.facing=facing;try{localStorage.setItem(SAVE_KEY,JSON.stringify(data));el('game-saved').textContent='Tu paseo está guardado en este dispositivo.';}catch{el('game-saved').textContent='Tu paseo continúa, pero este navegador no permitió guardarlo.';}}
 function say(text,speaker='Luci, la luciérnaga'){
@@ -59,21 +70,12 @@ function remember(id){if(!data.memories.includes(id)){data.memories.push(id);sav
 function tree(x,y,scale=1){return `<g transform="translate(${x} ${y}) scale(${scale})"><ellipse cy="20" rx="47" ry="16" fill="#102c28" opacity=".22"/><path d="M-7 15L-5-42 6-44 9 14Q0 19-7 15" fill="url(#bark)"/><path d="M0-10L-18-32M3-18L21-39" stroke="#9a8660" stroke-width="4"/><g class="tree-canopy" style="animation-delay:-${x%8}s"><path d="M-43-32Q-61-60-33-75Q-32-103-7-95Q17-115 31-87Q62-84 49-56Q67-36 39-22Q16-11 1-19Q-25-8-43-32" fill="url(#leaf-deep)"/><path d="M-35-65Q-18-88 3-81M12-90Q28-96 35-77M-42-43Q-32-59-20-52" stroke="#a9b786" stroke-width="4" opacity=".3" fill="none" stroke-linecap="round"/><g fill="#b0bf8a" opacity=".3"><ellipse cx="-15" cy="-70" rx="4" ry="2" transform="rotate(-30 -15 -70)"/><ellipse cx="24" cy="-47" rx="4" ry="2"/><ellipse cx="-29" cy="-38" rx="3" ry="2"/><ellipse cx="13" cy="-76" rx="3" ry="2"/></g></g><path d="M-17 21q-13-14-20-10m22 13q-4-18-13-23m49 20q7-18 14-18" stroke="#73916b" stroke-width="3" fill="none" stroke-linecap="round"/></g>`;}
 function flower(x,y,daisy=false,scale=1){return `<g transform="translate(${x} ${y}) scale(${scale})"><g class="field-flower" style="animation-delay:-${x%6}s"><path d="M0 8v-28" stroke="#8aa86b" stroke-width="2"/><ellipse cx="-5" cy="-3" rx="7" ry="3" fill="#8aa86b" transform="rotate(30 -5 -3)"/>${Array.from({length:daisy?10:12},(_,i)=>`<ellipse cy="-31" rx="${daisy?2.8:3.8}" ry="8" fill="${daisy?'#f6eed2':'#dfb95b'}" transform="rotate(${i*(daisy?36:30)} 0 -23)"/>`).join('')}<circle cy="-23" r="${daisy?4:7}" fill="${daisy?'#d1b963':'#66523c'}"/></g></g>`;}
 function scenery(){
-  let art=`<rect width="1400" height="900" fill="url(#ground)"/><path d="M-20 715Q350 815 680 660T1420 390M685 660Q510 450 270 265M680 660Q700 420 800 335T1080 190" stroke="#a7ab7b" stroke-width="72" fill="none" opacity=".28" stroke-linecap="round"/><path d="M-20 715Q350 815 680 660T1420 390M685 660Q510 450 270 265M680 660Q700 420 800 335T1080 190" stroke="#c3b991" stroke-width="49" fill="none" opacity=".16" stroke-linecap="round"/><rect width="1400" height="900" fill="url(#garden-grain)"/>`;
-  for(const [x,y,a] of [[620,690,-20],[674,652,30],[735,625,-18],[807,598,20],[870,572,-10],[550,510,35],[606,563,20],[710,490,-20],[735,428,12],[810,302,-25],[853,264,15],[405,380,35]])art+=`<g transform="translate(${x} ${y}) rotate(${a})"><ellipse cy="3" rx="14" ry="8" fill="#1e3d32" opacity=".12"/><path d="M-14-2Q-10-12 2-10L15-3 11 5-4 8-15 4Z" fill="#b7b391" opacity=".62"/><path d="M-10-4L1-7 10-2" fill="none" stroke="#ded2ad" opacity=".45"/></g>`;
-  for(let i=0;i<210;i++){const x=(i*197+39)%1400,y=(i*113+51)%900;art+=`<path d="M${x} ${y}l-2-5m2 5l3-4" stroke="#81a070" opacity=".18" stroke-width="1.5"/>`;}
-  const trees=[[90,170,1.7],[170,120,1.4],[370,95,1.6],[520,130,1.3],[680,100,1.6],[840,100,1.5],[1260,130,1.7],[1360,260,1.4],[1320,660,1.8],[1220,820,1.4],[875,845,1.2],[420,860,1.4],[100,860,1.7],[70,440,1.6],[130,590,1.3],[620,330,.9],[900,440,.8]];trees.forEach(t=>art+=tree(...t));
-  art+=`<ellipse cx="1080" cy="595" rx="170" ry="95" fill="#58795b"/><ellipse cx="1080" cy="590" rx="156" ry="84" fill="url(#pond-fill)"/><path class="pond-sheen" d="M960 576q100-50 210-5M991 620q85 27 165-5" stroke="#92b9aa" opacity=".4" fill="none" stroke-width="2"/><g class="lily-drift"><ellipse cx="1160" cy="588" rx="18" ry="8" fill="#6e986e"/><ellipse cx="1018" cy="555" rx="14" ry="7" fill="#80a578"/><circle cx="1161" cy="583" r="5" fill="#e4b9b2"/></g><g transform="translate(1080 590)"><ellipse class="pond-ripple" rx="60" ry="19"/><ellipse class="pond-ripple" rx="60" ry="19" style="animation-delay:-3.5s"/></g><path d="M1040 652v49m20-53v49m20-49v49m20-49v49m-72-35h85m-85 17h85" stroke="#a2916a" stroke-width="9"/><path d="M1025 655h91" stroke="#c6b18a" stroke-width="6"/>`;
-  art+=`<g transform="translate(240 244)" filter="url(#soft-shadow)"><path d="M-78 0V-92H78V0Z" fill="#d1c4a0"/><rect x="-67" y="-81" width="134" height="70" rx="2" fill="#345954"/><path d="M-60-18l45-35 27 16 32-34 20 53" fill="#81a17b"/><circle cx="35" cy="-60" r="11" fill="#e1d9a1"/><path d="M-75 9h150m-145 18h140" stroke="#867b5b" stroke-width="13"/><path d="M-88-103H88" stroke="#8da077" stroke-width="10"/></g>`;
-  art+=`<g transform="translate(1060 174)" filter="url(#soft-shadow)"><ellipse cy="28" rx="47" ry="16" fill="#708572"/><path d="M0-13l-24 42m24-42l27 42m-27-42v45" stroke="#c1b28d" stroke-width="5"/><g transform="rotate(-30)"><rect x="-39" y="-28" width="75" height="19" rx="5" fill="#bcb794"/><rect x="-45" y="-32" width="12" height="27" rx="3" fill="#e3d6a8"/></g></g>`;
-  art+=`<g transform="translate(1230 361)" filter="url(#soft-shadow)"><path d="M-17-15l-22 52m43-52l23 52M-2-12v48" stroke="#bba37c" stroke-width="6"/><rect x="-30" y="-56" width="60" height="53" rx="2" fill="#eadfc3"/><circle cx="2" cy="-31" r="14" fill="#d9b452"/><path d="M-20-9l10-17 14 13 13-17 9 21" fill="#7a9b76"/><ellipse cx="36" cy="21" rx="18" ry="11" fill="#c4b697"/><circle cx="29" cy="20" r="3" fill="#cfb15c"/><circle cx="40" cy="17" r="3" fill="#cb9390"/></g>`;
-  art+=`<g transform="translate(260 641)" filter="url(#soft-shadow)"><path d="M0 0v48" stroke="#a28c69" stroke-width="9"/><path d="M-24 2v-35q24-30 48 0V2Z" fill="#bd8e76"/><path d="M-16-17h32v20h-32Z" fill="#e1d4af"/><path d="M-16-17L0-5 16-17" fill="none" stroke="#a0876c" stroke-width="2"/><path d="M28-31v-22h16v13H28" fill="#dfbb69"/></g>`;
-  for(const [x,y] of [[540,660],[850,580],[380,350],[950,290],[1170,460]])art+=`<g><circle class="lantern-halo" cx="${x}" cy="${y-25}" r="65" fill="url(#lamp-glow)"/><path d="M${x} ${y}v-45" stroke="#9a9470" stroke-width="4"/><rect x="${x-7}" y="${y-51}" width="14" height="18" rx="4" fill="#edce87"/></g>`;
-  for(let i=0;i<22;i++)art+=flower(160+(i*79)%1100,180+(i*137)%590,i%3!==0,.45);
+  const art=drawWorld({tree,flower});
   el('map-scenery').innerHTML=art;
-  el('map-stations').innerHTML=stations.map(s=>`<g class="map-station" id="station-${s.id}" transform="translate(${s.x} ${s.y})" role="button" tabindex="0" aria-label="Ir a ${s.name}"><circle class="station-ring" r="37"/><circle class="station-mark" r="18"/><g class="station-icon">${stationIcons[s.id]}</g><text class="station-label" y="57">${s.name}</text></g>`).join('');
+  el('map-stations').innerHTML=stations.map(s=>`<g class="map-station" id="station-${s.id}" transform="translate(${s.x} ${s.y})" role="button" tabindex="0" aria-label="Ir a ${s.name}"><circle class="station-ring" r="37"/><circle class="station-mark" r="18"/><g class="station-icon">${stationIcons[s.id]||stationIcons.flowers}</g><text class="station-label" y="57">${s.name}</text></g>`).join('');
   stations.forEach(s=>{const node=el(`station-${s.id}`);node.addEventListener('click',e=>{e.stopPropagation();walkTo(s);});node.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();walkTo(s);}});});
-  el('map-effects').innerHTML=Array.from({length:18},(_,i)=>`<circle class="ambient-mote" cx="${100+(i*157)%1200}" cy="${130+(i*103)%620}" r="${i%3===0?2:1.2}" fill="#e5d697" opacity=".6" style="animation-delay:-${i%6}s"/>`).join('')+[[520,410],[830,275],[1080,700]].map(([x,y],i)=>`<g transform="translate(${x} ${y})"><g class="garden-butterfly" style="animation-delay:-${i*3}s"><g fill="${['#dbc491','#c6b2ba','#c1cbb3'][i]}" opacity=".85"><path class="butterfly-left" d="M0 0Q-16-23-16-5Q-18 8-2 4"/><path class="butterfly-right" d="M0 0Q16-23 16-5Q18 8 2 4"/></g><path d="M0-8V7" stroke="#5f6048" stroke-width="2"/></g></g>`).join('')+'<g id="tap-beacon" class="tap-beacon"><ellipse class="tap-ring" rx="18" ry="10" fill="none" stroke="#eddda6" stroke-width="1.5"/><circle r="2" fill="#eddda6"/></g><g id="luci" aria-hidden="true"><circle class="luci-halo" r="34" fill="url(#lamp-glow)"/><ellipse class="luci-wing" cx="-5" cy="-4" rx="5" ry="3" fill="#f6e8bb" opacity=".55"/><ellipse class="luci-wing" cx="5" cy="-4" rx="5" ry="3" fill="#f6e8bb" opacity=".55"/><circle r="4" fill="#f4db85"/><circle r="2" fill="#fff5cb"/></g>';
+  el('map-effects').innerHTML=Array.from({length:36},(_,i)=>`<circle class="ambient-mote" cx="${100+(i*457)%(WORLD.width-200)}" cy="${130+(i*283)%(WORLD.height-260)}" r="${i%3===0?2:1.2}" fill="#e5d697" opacity=".6" style="animation-delay:-${i%6}s"/>`).join('')+[[520,410],[1920,380],[1730,1340]].map(([x,y],i)=>`<g transform="translate(${x} ${y})"><g class="garden-butterfly" style="animation-delay:-${i*3}s"><g fill="${['#dbc491','#c6b2ba','#c1cbb3'][i]}" opacity=".85"><path class="butterfly-left" d="M0 0Q-16-23-16-5Q-18 8-2 4"/><path class="butterfly-right" d="M0 0Q16-23 16-5Q18 8 2 4"/></g><path d="M0-8V7" stroke="#5f6048" stroke-width="2"/></g></g>`).join('')+'<g id="tap-beacon" class="tap-beacon"><ellipse class="tap-ring" rx="18" ry="10" fill="none" stroke="#eddda6" stroke-width="1.5"/><circle r="2" fill="#eddda6"/></g><g id="luci" aria-hidden="true"><circle class="luci-halo" r="34" fill="url(#lamp-glow)"/><ellipse class="luci-wing" cx="-5" cy="-4" rx="5" ry="3" fill="#f6e8bb" opacity=".55"/><ellipse class="luci-wing" cx="5" cy="-4" rx="5" ry="3" fill="#f6e8bb" opacity=".55"/><circle r="4" fill="#f4db85"/><circle r="2" fill="#fff5cb"/></g>';
+  const routeLine=document.createElementNS('http://www.w3.org/2000/svg','polyline');routeLine.id='world-route';routeLine.setAttribute('aria-hidden','true');el('map-effects').insertBefore(routeLine,el('tap-beacon'));
   tapBeacon=el('tap-beacon');
   el('garden-encounters')?.remove();
   const layer=document.createElementNS('http://www.w3.org/2000/svg','g');layer.id='garden-encounters';
@@ -85,16 +87,16 @@ function scenery(){
 function renderBeds(){el('map-plants').innerHTML=['flowers','daisies'].map(id=>{const s=stations.find(s=>s.id===id);let art=`<g transform="translate(${s.x} ${s.y-65})"><ellipse cy="13" rx="93" ry="45" fill="#152e26" opacity=".25"/><path d="M-87-7Q-85-44 0-44Q85-44 87-7V9Q79 47 0 47Q-80 47-87 9Z" fill="#9a7a56"/><path d="M-87 1Q-67 35 0 35Q68 35 87 1" fill="none" stroke="#c0a477" stroke-width="4"/><ellipse cy="-8" rx="86" ry="35" fill="#5b4937" stroke="#b79a6e" stroke-width="5"/>`;for(let i=0;i<8;i++){const x=-57+(i%4)*38,y=-15+Math.floor(i/4)*26,slot=data.plots[id][i];art+=`<g transform="translate(${x} ${y}) scale(.58)">${slot?bloomSVG(slot.type,slot.stage):'<ellipse cy="9" rx="18" ry="7" fill="#3e382c"/><path d="M-6 9H6M0 3v12" stroke="#a28b60" opacity=".5"/>'}</g>`;}if(data.plots[id].some(slot=>slot?.type==='daisy'&&slot.stage===3))art+='<g transform="translate(45 -66)"><g class="garden-butterfly"><path class="butterfly-left" d="M0 0Q-16-23-16-5Q-18 8-2 4" fill="#e4c6ac"/><path class="butterfly-right" d="M0 0Q16-23 16-5Q18 8 2 4" fill="#e4c6ac"/><path d="M0-5V6" stroke="#6b7051" stroke-width="2"/></g></g>';return art+'<path d="M92 5v-37" stroke="#98815b" stroke-width="3"/><path d="M78-38h30v16H78Z" fill="#c0a77d"/><path d="M85-30h16" stroke="#7d7953" stroke-width="2"/></g>';}).join('');}
 const gardening=createGardening({
   getPlots:id=>data.plots[id],
-  updateSlot:(id,index,slot)=>{data.plots[id][index]=slot;data.beds[id]=Math.max(0,...data.plots[id].map(item=>item?.stage||0));renderBeds();save();},
+  updateSlot:(id,index,slot)=>{data.plots[id][index]=slot;data.beds[id]=Math.max(0,...data.plots[id].map(item=>item?.stage||0));renderBeds();phaseTwo.renderWorld();save();},
   onMessage:text=>say(text),onBloom:id=>remember(id),isDay:()=>data.day,motionPaused:()=>ambientPaused
 });
 function updateGuide(){
   const next=stations.find(s=>!data.memories.includes(s.id));
-  el('game-guide').textContent=next?({flowers:'¿Plantamos un girasol? Yo te enseño el camino.',daisies:'Hay un parterre esperando margaritas.',pond:'El agua guarda un ratito tranquilo para ti.',letter:'Alguien dejó una notita en tu buzón.',stars:'Esta noche el cielo tiene tu nombre.',art:'Hay un lienzo esperando tus colores.',cinema:'Nos queda una función entre los árboles.'}[next.id]):'El jardín ya guarda tus recuerdos. Hoy puedes pasear a tu manera.';
+  el('game-guide').textContent=next?({greenhouse:'El invernadero guarda semillas para inventar una flor.',visitors:'Miso encontró un claro para descansar contigo.',river:'Hay otro camino, junto al río. ¿Vamos al puente?',moments:'Podemos preparar un pequeño rincón para compartir.',flowers:'¿Plantamos un girasol? Yo te enseño el camino.',daisies:'Hay un parterre esperando margaritas.',pond:'El agua guarda un ratito tranquilo para ti.',letter:'Alguien dejó una notita en tu buzón.',stars:'Esta noche el cielo tiene tu nombre.',art:'Hay un lienzo esperando tus colores.',cinema:'Nos queda una función entre los árboles.'}[next.id]):'El jardín ya guarda tus recuerdos. Hoy puedes pasear a tu manera.';
   el('follow-light').textContent=next?'Seguir su luz ↗':'Volver a mis flores ↗';
 }
-function walkTo(s){if(!data.entered)return;target={x:s.x,y:s.y};arrival=s;setLuci(false);say(`Vamos ${s.name.toLowerCase().startsWith('el ')?'al '+s.name.toLowerCase().slice(3):'a '+s.name.toLowerCase()}. Puedes cambiar de camino cuando quieras.`);el('game-welcome').hidden=true;}
-function stop(){keys.clear();target=null;arrival=null;speed=0;player.classList.remove('walking');save();}
+function walkTo(s){if(!data.entered)return;beginRoute(s,{followRoads:true});arrival=s;setLuci(false);say(`Vamos ${s.name.toLowerCase().startsWith('el ')?'al '+s.name.toLowerCase().slice(3):'a '+s.name.toLowerCase()}. Puedes cambiar de camino cuando quieras.`);el('game-welcome').hidden=true;}
+function stop(){keys.clear();target=null;route=[];arrival=null;speed=0;player.classList.remove('walking');save();}
 function activity(panel){stop();const dialog=el('activity-dialog');dialog.dataset.panel=panel;dialog.showModal();if(['stars','art','cinema'].includes(panel))document.querySelector(`[data-view="${panel}"]`).click();}
 function interact(s=nearby){
   if(!s)return;
@@ -103,6 +105,7 @@ function interact(s=nearby){
     if(!data.finds.includes(s.id)){data.finds.push(s.id);if(!data.keepsakes.includes(s.id))data.keepsakes.push(s.id);save();renderBackpack();}
     el('discovery-title').textContent=s.name;el('discovery-text').textContent=s.text;el('discovery-symbol').textContent=s.symbol;
     renderDiscovery(s);el('discovery-dialog').showModal();say('Lo guardé en tus pequeños encuentros. Podemos volver cuando quieras.');
+  }else if(['greenhouse','visitors','river','moments'].includes(s.id)){remember(s.id);phaseTwo.open(s.id);
   }else if(s.id==='flowers'||s.id==='daisies'){
     gardening.open(s.id);say('Aquí puedes elegir qué sembrar y darle un lugar a cada flor.');
   }else if(s.id==='letter'){remember(s.id);el('letter-open').click();}
@@ -111,11 +114,11 @@ function interact(s=nearby){
   updateContext();
 }
 let contextSignature='';
-function updateContext(){nearby=nearestStation(position,stations,82)||nearestStation(position,encounters,68);const signature=`${nearby?.id||''}:${arrival?.id||''}:${data.beds[nearby?.id]||0}`;if(signature===contextSignature)return;contextSignature=signature;const button=el('game-interact');button.disabled=!nearby;el('nearby-label').textContent=nearby?nearby.name:'Toca el camino para caminar';el('game-location').textContent=nearby?nearby.name.toUpperCase():'EL JARDÍN DE LOS PEQUEÑOS COMIENZOS';let action=nearby?.action||'Acércate a un rincón';if(nearby&&['flowers','daisies'].includes(nearby.id))action='Cuidar este rincón';button.replaceChildren(document.createTextNode(action+' '));const kbd=document.createElement('kbd');kbd.textContent='E';button.append(kbd);stations.forEach(s=>{el(`station-${s.id}`).classList.toggle('nearest',s===nearby);el(`station-${s.id}`).classList.toggle('guiding',s===arrival);});}
-function renderBackpack(){el('daily-destinations').replaceChildren();encounters.forEach(e=>{const b=document.createElement('button');b.textContent=e.symbol+' '+e.name;b.onclick=()=>{el('backpack').close();walkTo(e);};el('daily-destinations').append(b);});el('encounter-journal').textContent=data.finds.length?'En este paseo has encontrado: '+data.finds.map(id=>encounters.find(e=>e.id===id).name.toLowerCase()).join(' · ')+'.':'Luci guardará aquí los pequeños encuentros que elijas mirar durante tus paseos.';el('map-destinations').replaceChildren();stations.forEach(s=>{const button=document.createElement('button');button.textContent=`${s.icon} ${s.name}`;const status=document.createElement('span');status.textContent=data.memories.includes(s.id)?`♡ ${s.memory}`:'Un rincón por descubrir';button.append(status);button.onclick=()=>{el('backpack').close();walkTo(s);};el('map-destinations').append(button);});}
+function updateContext(){nearby=nearestStation(position,stations,82)||nearestStation(position,encounters,68);const signature=`${nearby?.id||''}:${arrival?.id||''}:${data.beds[nearby?.id]||0}:${regionAt(position).id}`;if(signature===contextSignature)return;contextSignature=signature;const button=el('game-interact');button.disabled=!nearby;el('nearby-label').textContent=nearby?nearby.name:'Toca el camino para caminar';el('game-location').textContent=nearby?nearby.name.toUpperCase():regionAt(position).name.toUpperCase();let action=nearby?.action||'Acércate a un rincón';if(nearby&&['flowers','daisies'].includes(nearby.id))action='Cuidar este rincón';button.replaceChildren(document.createTextNode(action+' '));const kbd=document.createElement('kbd');kbd.textContent='E';button.append(kbd);stations.forEach(s=>{el(`station-${s.id}`).classList.toggle('nearest',s===nearby);el(`station-${s.id}`).classList.toggle('guiding',s===arrival);});}
+function renderBackpack(){el('daily-destinations').replaceChildren();encounters.forEach(e=>{const b=document.createElement('button');b.textContent=e.symbol+' '+e.name;b.onclick=()=>{el('backpack').close();walkTo(e);};el('daily-destinations').append(b);});el('encounter-journal').textContent=data.finds.length?'En este paseo has encontrado: '+data.finds.map(id=>encounters.find(e=>e.id===id).name.toLowerCase()).join(' · ')+'.':'Luci guardará aquí los pequeños encuentros que elijas mirar durante tus paseos.';el('map-destinations').replaceChildren();stations.forEach(s=>{const button=document.createElement('button');const badge=document.createElement('span');badge.className='destination-art';badge.setAttribute('aria-hidden','true');badge.innerHTML=`<svg viewBox="-18 -18 36 36">${stationIcons[s.id]||stationIcons.flowers}</svg>`;const label=document.createElement('strong');label.textContent=s.name;button.append(badge,label);const status=document.createElement('span');status.textContent=data.memories.includes(s.id)?`♡ ${s.memory}`:'Un rincón por descubrir';button.append(status);button.onclick=()=>{el('backpack').close();walkTo(s);};el('map-destinations').append(button);});}
 let viewport={width:840,height:540},cameraDirty=true,frameId=0;
 const resizeObserver=new ResizeObserver(entries=>{const {width,height}=entries[0].contentRect;viewport={width,height};cameraDirty=true;});resizeObserver.observe(svg);
-function camera(){const b=cameraBounds(position,viewport.width,viewport.height);svg.setAttribute('viewBox',`${b.x} ${b.y} ${b.width} ${b.height}`);cameraDirty=false;}
+function camera(){const b=cameraBounds(position,viewport.width,viewport.height,zoom);svg.setAttribute('viewBox',`${b.x} ${b.y} ${b.width} ${b.height}`);cameraDirty=false;}
 function setTime(){stage.classList.toggle('day',data.day);el('game-time').textContent=data.day?'☀ Día':'☾ Noche';el('game-time').setAttribute('aria-pressed',String(data.day));const stops=el('ground').querySelectorAll('stop');stops[0].setAttribute('stop-color',data.day?'#9cb486':'#45694f');stops[1].setAttribute('stop-color',data.day?'#75996c':'#1b4038');const leaves=el('leaf-deep').querySelectorAll('stop');['#94ac79','#6f925f','#456e50'].forEach((color,i)=>leaves[i].setAttribute('stop-color',data.day?color:['#819769','#5c7e57','#315d48'][i]));save();}
 function loop(time){
   if(document.hidden){lastFrame=0;return;}
@@ -126,9 +129,9 @@ function loop(time){
   const before={...position};
   if(data.entered&&!modal){let dx=(keys.has('right')?1:0)-(keys.has('left')?1:0),dy=(keys.has('down')?1:0)-(keys.has('up')?1:0);
     speed=approach(speed,(dx||dy||target)?145:0,(dx||dy||target?600:850)*dt);
-    if(dx||dy){if(luciExpanded)setLuci(false);target=null;arrival=null;const length=Math.hypot(dx,dy);lastVector={x:dx/length,y:dy/length};position=moveTowards(position,{x:position.x+dx*100,y:position.y+dy*100},speed*dt);}
-    else if(target){lastVector={x:target.x-position.x,y:target.y-position.y};position=moveTowards(position,target,speed*dt);const length=Math.hypot(lastVector.x,lastVector.y);if(length)lastVector={x:lastVector.x/length,y:lastVector.y/length};if(Math.hypot(position.x-target.x,position.y-target.y)<2){const reached=arrival;target=null;arrival=null;speed=0;if(reached)interact(reached);else save();}}
-    else if(speed>.1){position=clampPoint({x:position.x+lastVector.x*speed*dt,y:position.y+lastVector.y*speed*dt});}
+    if(dx||dy){if(luciExpanded)setLuci(false);target=null;route=[];arrival=null;const length=Math.hypot(dx,dy);lastVector={x:dx/length,y:dy/length};position=walkStep(position,{x:position.x+dx*100,y:position.y+dy*100},speed*dt);}
+    else if(target){lastVector={x:target.x-position.x,y:target.y-position.y};position=walkStep(position,target,speed*dt);const length=Math.hypot(lastVector.x,lastVector.y);if(length)lastVector={x:lastVector.x/length,y:lastVector.y/length};if(Math.hypot(position.x-target.x,position.y-target.y)<2){if(route.length){target=route.shift();}else{const reached=arrival;target=null;arrival=null;speed=0;if(reached)interact(reached);else save();}}}
+    else if(speed>.1){position=walkStep(position,{x:position.x+lastVector.x*100,y:position.y+lastVector.y*100},speed*dt);}
   }
   const moved=Math.hypot(position.x-before.x,position.y-before.y);walking=moved>.01;
   strideDistance+=moved;facing=movementFacing(position.x-before.x,position.y-before.y,facing);
@@ -144,13 +147,14 @@ function loop(time){
   const guide=nearbyEncounter?{x:position.x+(nearbyEncounter.x-position.x)*.45,y:position.y+(nearbyEncounter.y-position.y)*.45-18}:{x:position.x+27,y:position.y-38};
   if(!modal)luciPosition=dampPoint(luciPosition,{x:guide.x+Math.sin(t)*9,y:guide.y+(walking||nearbyEncounter?Math.cos(t*.7)*6:22)},7,dt);
   el('luci').setAttribute('transform',`translate(${luciPosition.x} ${luciPosition.y})`);
-  if(tapBeacon){tapBeacon.classList.toggle('active',!!target&&!modal);if(target)tapBeacon.setAttribute('transform',`translate(${target.x} ${target.y})`);}
+  if(tapBeacon){tapBeacon.classList.toggle('active',!!target&&!modal);if(target){const destination=route.at(-1)||target;tapBeacon.setAttribute('transform',`translate(${destination.x} ${destination.y})`);}}
   dailyCheck+=dt;if(dailyCheck>15){dailyCheck=0;checkDay();}
   autosaveTime+=dt;if(walking&&autosaveTime>=2){save();autosaveTime=0;}
   if(wasWalking&&!walking)save();wasWalking=walking;
-  if(walking||cameraDirty)camera();updateContext();frameId=requestAnimationFrame(loop);
+  if(target)el('world-route').setAttribute('points',[position,target,...route].map(p=>`${p.x},${p.y}`).join(' '));else el('world-route').removeAttribute('points');
+  worldMap.update();if(walking||cameraDirty)camera();updateContext();frameId=requestAnimationFrame(loop);
 }
-svg.addEventListener('click',e=>{if(!data.entered||document.querySelector('dialog[open]'))return;setLuci(false);const matrix=svg.getScreenCTM();if(!matrix)return;const point=new DOMPoint(e.clientX,e.clientY).matrixTransform(matrix.inverse());target=clampPoint(point);arrival=null;});
+svg.addEventListener('click',e=>{if(!data.entered||document.querySelector('dialog[open]'))return;setLuci(false);const matrix=svg.getScreenCTM();if(!matrix)return;const point=new DOMPoint(e.clientX,e.clientY).matrixTransform(matrix.inverse());beginRoute(point);arrival=null;});
 const keyMap={ArrowUp:'up',w:'up',W:'up',ArrowDown:'down',s:'down',S:'down',ArrowLeft:'left',a:'left',A:'left',ArrowRight:'right',d:'right',D:'right'};
 window.addEventListener('keydown',e=>{if(!data.entered||document.querySelector('dialog[open]')||/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName))return;if(keyMap[e.key]){e.preventDefault();keys.add(keyMap[e.key]);}if((e.key==='e'||e.key==='E')&&!e.repeat){e.preventDefault();interact();}});
 window.addEventListener('keyup',e=>{if(keyMap[e.key]){keys.delete(keyMap[e.key]);if(!keys.size)save();}});window.addEventListener('blur',stop);document.addEventListener('visibilitychange',()=>{if(document.hidden){stop();stage.classList.add('scene-paused');cancelAnimationFrame(frameId);lastFrame=0;}else{checkDay();lastFrame=0;frameId=requestAnimationFrame(loop);}});
@@ -174,17 +178,19 @@ el('canvas').addEventListener('pointerup',()=>remember('art'));document.querySel
 document.querySelectorAll('dialog').forEach(dialog=>dialog.addEventListener('close',()=>{keys.clear();document.activeElement?.blur();checkDay();}));
 window.addEventListener('pagehide',stop);
 el('close-discovery').onclick=()=>el('discovery-dialog').close();
-scenery();renderDecorations();setTime();setMotion();renderBackpack();updateGuide();el('game-welcome').hidden=data.entered;frameId=requestAnimationFrame(loop);
+const phaseTwo=createPhaseTwo({getData:()=>data,save,stop,onMessage:say,encounters:()=>encounterTemplates,motionPaused:()=>ambientPaused});
+scenery();phaseTwo.renderWorld();renderDecorations();setTime();setMotion();renderBackpack();updateGuide();el('game-welcome').hidden=data.entered;frameId=requestAnimationFrame(loop);
 
 if(data.entered)say('Bienvenida de vuelta, Isis. Te guardé tu lugar; seguimos cuando quieras.');
 
 function checkDay(){
  if(document.querySelector('dialog[open]'))return;
- if(renewDay(data)){stop();encounters=dailyEncounters(encounterTemplates,data.gardenDate);noticedEncounter=null;trailStep=0;contextSignature='';scenery();renderDecorations();renderBackpack();save();say('Un nuevo día, Isis. La tierra vuelve a estar lista y el sendero guarda otras sorpresas.');}
+ if(renewDay(data)){stop();encounters=dailyEncounters(encounterTemplates,data.gardenDate);noticedEncounter=null;trailStep=0;contextSignature='';scenery();phaseTwo.renderWorld();renderDecorations();renderBackpack();save();say('Un nuevo día, Isis. La tierra vuelve a estar lista y el sendero guarda otras sorpresas.');}
 }
 function renderDecorations(){
  let layer=el('garden-decorations');if(!layer){layer=document.createElementNS('http://www.w3.org/2000/svg','g');layer.id='garden-decorations';layer.setAttribute('aria-hidden','true');svg.insertBefore(layer,el('map-stations'));}
  const art={pot:'<path d="M-14-2H14L10 19H-10Z" fill="#bd9271"/><path d="M0-2V-23M0-11Q-18-27-17-13Q-12-5 0-11M0-17Q15-32 17-20Q14-10 0-17" fill="#96ac7d" stroke="#77925f"/>',lamp:'<circle cy="-24" r="36" fill="url(#lamp-glow)"/><path d="M0 16V-35" stroke="#9e8f69" stroke-width="4"/><rect x="-8" y="-36" width="16" height="20" rx="5" fill="#edcf83"/>',bench:'<path d="M-25-12H25M-25-3H25M-28 8H28M-20 8V24M20 8V24" stroke="#c2a47d" stroke-width="7"/>',stone:'<ellipse rx="20" ry="11" fill="#bab89b"/><ellipse cx="15" cy="8" rx="12" ry="8" fill="#929e89"/>'};
+ phaseTwo?.renderWorld();
  layer.innerHTML=data.decorations.map(d=>`<g transform="translate(${d.x} ${d.y})"><ellipse cy="21" rx="25" ry="6" fill="#15372b" opacity=".2"/>${art[d.type]}</g>`).join('');
 }
 let trailStep=0;
@@ -204,3 +210,8 @@ function renderDiscovery(s){
  }
 }
 createExtras({getData:()=>data,save,position:()=>({...position}),renderDecorations,stop,beforeRestore:value=>{restoringBackup=value;}});
+
+initGameMenus();
+
+function beginRoute(point,options){route=planPath(position,point,options);target=route.shift()||null;}
+const worldMap=createWorldMap({getPosition:()=>position,stations,walkTo,onZoom:value=>{zoom=value;cameraDirty=true;}});
