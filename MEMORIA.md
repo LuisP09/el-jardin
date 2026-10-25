@@ -19,10 +19,10 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 - Repositorio: https://github.com/LuisP09/el-jardin
 - Sitio público: https://luisp09.github.io/el-jardin/
 - Rama de publicación: `main`; un push activa `.github/workflows/pages.yml`.
-- Versión funcional publicada y verificada: `01657c69f0f4a19cb9a66bfc4b9fb24ce25e7a77`. Los commits posteriores de documentación no cambian esa versión funcional.
-- Despliegue verificado: https://github.com/LuisP09/el-jardin/actions/runs/40173485762 (completado correctamente).
+- Versión funcional publicada y verificada: `a72400b7ffde345a81e1d753dc509a1b93cc149d`. Los commits posteriores de documentación no cambian esa versión funcional.
+- Despliegue verificado: https://github.com/LuisP09/el-jardin/actions/runs/40175729661 (completado correctamente).
 - **Segunda fase, menús de juego, mapa ampliado y correcciones de caminos publicados con autorización del usuario. GitHub Actions y archivos públicos verificados.**
-- Caché offline publicada: `ed29b1d3101fa767`; incluye los módulos del mapa, menús y segunda fase. El hash de CI puede diferir del local por los finales de línea de los archivos.
+- Caché offline publicada: `a4048f811c3acd3b`; incluye mapa, menús, segunda fase, minijuegos y postales. El hash de CI puede diferir del local por los finales de línea de los archivos.
 - No hacer commit/push para publicar ni activar despliegues sin autorización del usuario.
 - Vista previa de la segunda fase: http://localhost:4176/?preview=1&review=phase-two
 - La vista previa requiere el servidor local activo; el enlace no es accesible desde el celular de Isis como si fuera un sitio público.
@@ -159,7 +159,7 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 
 - **Ajuste publicado y verificado:** movimiento de Isis a 205 unidades/s (antes 145), aceleración más ágil y render sin límite artificial de 30 FPS. Los cuadros lentos se recuperan en pasos pequeños de hasta 1/120 s, con límite de 150 ms para evitar saltos tras pausas. En dispositivos táctiles se desactiva el balanceo masivo de árboles y flores; Luci y fauna conservan sus animaciones. Publicado con autorización del usuario en `01657c6`; Actions `40173485762` correcto y archivos públicos verificados.
 - Validación del ajuste: 37 pruebas y build correctos; simulación de avance equivalente entre 10 y 120 FPS y recorrido por teclado en navegador. Falta confirmar fluidez en Android real; las pruebas no sustituyen una medición en ese teléfono.
-## Minijuegos y variedad (solo local)
+## Minijuegos y variedad (publicados)
 
 - Acceso: **Mi mochila → Mis cosas → Minijuegos**. Selector ilustrado «Un ratito para mí», integrado en el panel de actividades. Sin relojes, puntos, rachas, derrotas ni recompensas obligatorias. No promete efectos terapéuticos.
 - Selector ampliado con accesos «Algo sencillo», «Ocupar mi atención» y «Dejar una idea aquí». Son elecciones de actividad; no se pregunta, registra ni infiere el estado emocional. El texto de bienvenida permite estar triste o sin energía sin exigir cambiar cómo se siente.
@@ -172,15 +172,17 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 - Variedad existente: pétalos y constelaciones generan posiciones nuevas con separación táctil, propuestas creativas distintas sin repetir la anterior y botón «Otra composición» / «Otro cielo». Estanque con propuestas barajadas que rotan, en vez de quedar atascado en la última frase.
 - Archivos: `calm-games.js`, `calm-games-core.js`, `calm-games.css`, integrados en build, precaché offline, pruebas y workflow. No se modifica el formato de las partidas.
 - Validación: **46 pruebas**, build y sintaxis correctos. Navegador: completar ramo y secuencia, elegir otra luz sin perder avance, poner/soltar nube y descartar texto al cerrar; consola sin errores. Selector en 320×640, 390×844, 844×390 y 1280×800 sin desbordamiento y botones de al menos 44 px; objetivos del ramo verificados también a 320 px. Falta prueba en Android real. Vista previa: http://localhost:4176/?preview=1&review=minigames.
-- Estado: **solo local**, junto con la mejora de actualizaciones PWA. No hacer push sin autorización del usuario.
+- Estado: **publicado** con autorización del usuario en `a72400b`; Actions `40175729661` correcto y archivos públicos verificados. Las mejoras de actualizaciones PWA también están publicadas.
 - Validación de esta ampliación: **48 pruebas**, build, sintaxis y diff correctos. Navegador: revelar hojas y postal completa, tema nuevo, seguir luces alternando ayuda sin perder avance, pasar de nubes a ramo de nueve flores. A 320 px: sin desbordamiento del ramo, objetivos y hojas de al menos 44 px. Captura de postal completa a 390×844; consola sin errores. Pendiente Android real.
 
-## Pendiente
+## Actualizaciones PWA (publicadas)
 
 - El usuario confirmó que borrar la caché resolvió la lentitud en celulares sin la optimización gráfica pendiente. Se retiró por completo el experimento de paisaje como textura; se conserva el paisaje vectorial publicado.
-- **Actualizaciones PWA en local:** búsqueda al iniciar, recuperar foco/visibilidad/conexión y cada 15 minutos mientras esté visible, con límite de una consulta automática por minuto. Botón «Buscar actualización» y aviso inferior «Nueva versión disponible» que abre el panel. Se guarda el paseo antes de activar/recargar; nunca se recarga por sorpresa. Gestiona activaciones desde otra pestaña y fallos sin conexión. Registro con `updateViaCache:none` e instalación de recursos con `cache:reload` para evitar reutilizar archivos HTTP antiguos.
-- Validación: 41 pruebas y build correctos. Ciclo real en servidor local separado: primera instalación sin aviso falso, detección de un worker nuevo, aviso móvil a 390×844, actualización elegida por botón, recarga y regreso al paseo, sin errores de consola. Pruebas automatizadas cubren offline, limitación de consultas, guardado, recarga única y otras pestañas. Sigue sin publicarse; requiere autorización.
-- Revisar la actualización en el Android real de Isis cuando sea posible.
+- **Actualizaciones PWA publicadas:** búsqueda al iniciar, recuperar foco/visibilidad/conexión y cada 15 minutos mientras esté visible, con límite de una consulta automática por minuto. Botón «Buscar actualización» y aviso inferior «Nueva versión disponible» que abre el panel. Se guarda el paseo antes de activar/recargar; nunca se recarga por sorpresa. Gestiona activaciones desde otra pestaña y fallos sin conexión. Registro con `updateViaCache:none` e instalación de recursos con `cache:reload` para evitar reutilizar archivos HTTP antiguos.
+- Validación: 41 pruebas y build correctos. Ciclo real en servidor local separado: primera instalación sin aviso falso, detección de un worker nuevo, aviso móvil a 390×844, actualización elegida por botón, recarga y regreso al paseo, sin errores de consola. Pruebas automatizadas cubren offline, limitación de consultas, guardado, recarga única y otras pestañas. Publicado en `a72400b`; Actions y archivos públicos verificados.
+## Pendiente
+
+- Revisar los minijuegos y la actualización en el Android real de Isis cuando sea posible.
 - Continuar cualquier nueva mejora en local y publicar únicamente con autorización del usuario.
 - Mantener esta memoria actualizada en cada entrega.
 
@@ -188,6 +190,7 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 
 | Fecha | Cambio | Validación / estado |
 | --- | --- | --- |
+| 25-10-2026 | Publicación autorizada de cuatro minijuegos, variedad y actualizaciones PWA | 48 pruebas; versión funcional a72400b; Actions 40175729661 correcto, archivos públicos y caché a4048f811c3acd3b verificados |
 | 25-10-2026 | Ventanas del jardín con tres ilustraciones, accesos según actividad deseada, ramos pequeños, Luci con ayuda visible y pasos opcionales tras las nubes | 48 pruebas, build y partidas verificadas en navegador; **solo local**, pendiente Android real |
 | 25-10-2026 | Tres minijuegos: ramos, secuencias de Luci y nubes temporales; variedad en pétalos, constelaciones y estanque | 46 pruebas, build, partidas y tamaños revisados en navegador; **solo local**, pendiente Android real |
 | 25-10-2026 | Retirado el experimento de textura; detección y aviso de actualizaciones PWA, búsqueda manual y descarga sin caché HTTP | 41 pruebas, build y ciclo real de actualización en navegador; **solo local**, sin publicar |
