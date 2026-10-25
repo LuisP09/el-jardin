@@ -19,10 +19,10 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 - Repositorio: https://github.com/LuisP09/el-jardin
 - Sitio público: https://luisp09.github.io/el-jardin/
 - Rama de publicación: `main`; un push activa `.github/workflows/pages.yml`.
-- Versión funcional publicada y verificada: `75f9a3ab2cb6e8ee4c9d3e42155a9b7c411ca915`. Los commits posteriores de documentación no cambian esa versión funcional.
-- Despliegue verificado: https://github.com/LuisP09/el-jardin/actions/runs/40172945161 (completado correctamente).
+- Versión funcional publicada y verificada: `01657c69f0f4a19cb9a66bfc4b9fb24ce25e7a77`. Los commits posteriores de documentación no cambian esa versión funcional.
+- Despliegue verificado: https://github.com/LuisP09/el-jardin/actions/runs/40173485762 (completado correctamente).
 - **Segunda fase, menús de juego, mapa ampliado y correcciones de caminos publicados con autorización del usuario. GitHub Actions y archivos públicos verificados.**
-- Caché offline publicada: `3104c95a85bfb98a`; incluye los módulos del mapa, menús y segunda fase. El hash de CI puede diferir del local por los finales de línea de los archivos.
+- Caché offline publicada: `ed29b1d3101fa767`; incluye los módulos del mapa, menús y segunda fase. El hash de CI puede diferir del local por los finales de línea de los archivos.
 - No hacer commit/push para publicar ni activar despliegues sin autorización del usuario.
 - Vista previa de la segunda fase: http://localhost:4176/?preview=1&review=phase-two
 - La vista previa requiere el servidor local activo; el enlace no es accesible desde el celular de Isis como si fuera un sitio público.
@@ -137,7 +137,7 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 ## Desarrollo y comprobaciones
 
 - JavaScript/HTML/CSS sin dependencias de npm; Node.js 22 o posterior.
-- `npm test`: última ejecución verificada con **35 pruebas aprobadas**.
+- `npm test`: última ejecución verificada con **37 pruebas aprobadas**.
 - `npm run build`: genera `_site/` y valida archivos públicos e iconos.
 - Servidor usado: `python -m http.server 4176 --bind 127.0.0.1 --directory _site`.
 - Añadir cada nuevo módulo/estilo público a `scripts/build.mjs` y `sw.js`; ampliar la cobertura de archivos offline de `tests/pwa.test.mjs` y las comprobaciones del workflow cuando corresponda.
@@ -146,7 +146,7 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 - Copias: formato `isis-garden`, versión 1. La restauración suspende el guardado previo antes de recargar para no sobrescribir la copia recién importada.
 - Los datos son locales al navegador y al origen. `localhost`, `127.0.0.1` y el sitio público tienen almacenamientos separados.
 - Se detectó una caché antigua en la vista previa de `127.0.0.1`; la revisión reciente usa `localhost` con `?preview=1`. Este parámetro evita registrar un nuevo service worker en la vista previa, pero no garantiza eliminar uno que ya estuviera activo.
-- En Android, una PWA instalada se actualiza desde **Mi mochila → Instalar / actualizar → Actualizar jardín**, cuando la actualización esté disponible.
+- En Android, una PWA instalada se actualiza desde **Mi mochila → Ajustes → Instalar / actualizar → Actualizar jardín**, cuando la actualización esté disponible.
 
 ## Validación de la segunda fase
 
@@ -155,10 +155,12 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 - Río revisado a 320×640, 390×844, 844×390 y 1280×800: sin desbordamiento horizontal y con botones HTML de al menos 44 px de alto.
 - Las comprobaciones de navegador son emulación de tamaños; falta la revisión del usuario y, preferiblemente, una prueba en el Android real.
 
+## Movimiento móvil (publicado)
+
+- **Ajuste publicado y verificado:** movimiento de Isis a 205 unidades/s (antes 145), aceleración más ágil y render sin límite artificial de 30 FPS. Los cuadros lentos se recuperan en pasos pequeños de hasta 1/120 s, con límite de 150 ms para evitar saltos tras pausas. En dispositivos táctiles se desactiva el balanceo masivo de árboles y flores; Luci y fauna conservan sus animaciones. Publicado con autorización del usuario en `01657c6`; Actions `40173485762` correcto y archivos públicos verificados.
+- Validación del ajuste: 37 pruebas y build correctos; simulación de avance equivalente entre 10 y 120 FPS y recorrido por teclado en navegador. Falta confirmar fluidez en Android real; las pruebas no sustituyen una medición en ese teléfono.
 ## Pendiente
 
-- **Ajuste local posterior a la publicación:** movimiento de Isis a 205 unidades/s (antes 145), aceleración más ágil y render sin límite artificial de 30 FPS. Los cuadros lentos se recuperan en pasos pequeños de hasta 1/120 s, con límite de 150 ms para evitar saltos tras pausas. En dispositivos táctiles se desactiva el balanceo masivo de árboles y flores; Luci y fauna conservan sus animaciones. No publicado.
-- Validación del ajuste: 37 pruebas y build correctos; simulación de avance equivalente entre 10 y 120 FPS y recorrido por teclado en navegador. Falta confirmar fluidez en Android real; las pruebas no sustituyen una medición en ese teléfono.
 - Revisar la actualización en el Android real de Isis cuando sea posible.
 - Continuar cualquier nueva mejora en local y publicar únicamente con autorización del usuario.
 - Mantener esta memoria actualizada en cada entrega.
@@ -167,7 +169,7 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 
 | Fecha | Cambio | Validación / estado |
 | --- | --- | --- |
-| 25-10-2026 | Corrección de lentitud en móvil: velocidad 205, respuesta más rápida, recuperación de cuadros lentos y menos animación de vegetación en pantallas táctiles | 37 pruebas, build y movimiento por teclado en navegador; **solo local**, pendiente Android real |
+| 25-10-2026 | Corrección de lentitud en móvil: velocidad 205, respuesta más rápida, recuperación de cuadros lentos y menos animación de vegetación en pantallas táctiles | 37 pruebas, build y movimiento por teclado en navegador; **publicado en `01657c6`**, Actions y archivos públicos verificados; pendiente Android real |
 | Previo al 25-10-2026 | PWA, mundo explorable, móvil, audio, jardinería, Luci y continuidad | Publicaciones previas; commits `f6d4bf7` y `3d80bb7` |
 | 25-10-2026 | Decoración, diez encuentros, renovación diaria, copias, 24 notas y correcciones de botones; retirada del editor de cartas y lista duplicada | 20 pruebas; publicado en `bb6d31d`, Actions correcto |
 | 25-10-2026 | Segunda fase: invernadero, visitantes, río, cuaderno, momentos y clima | 28 pruebas; compilación y revisión móvil; **solo local** |
