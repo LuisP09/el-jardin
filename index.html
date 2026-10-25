@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#122c2b">
+  <meta name="description" content="Un pequeño jardín bajo las estrellas para crear, respirar a tu ritmo y disfrutar el momento.">
+  <title>El jardín de Isis</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Jardín de Isis">
+  <script src="pwa.js" defer></script>
+  <link rel="stylesheet" href="style.css"><script src="app.js" defer></script>
+</head>
+<body>
+  <header><a class="brand" href="./">✳ <span>el jardín de Isis</span></a><span class="header-note">Besito en tu pollollo</span><button id="sound" aria-pressed="false">♪ Sonido apagado</button></header>
+  <main>
+    <section class="intro"><div class="eyebrow">PARA ISIS, CON CARIÑO · ABIERTO SIEMPRE</div><h1>El mundo puede esperar.<br><em>Este jardín es tuyo, Isis.</em></h1><p>Girasoles para tus días de sol. Margaritas bajo las estrellas.<br class="desktop"> Y un besito en tu pollollo, siempre.</p><button id="simple-mode" aria-pressed="false">Hoy necesito algo sencillo</button></section>
+    <nav class="tabs" aria-label="Elige tu rincón"><button class="active" data-view="garden" aria-pressed="true">❀ <span>El jardín</span></button><button data-view="stars" aria-pressed="false">✧ <span>Las estrellas</span></button><button data-view="art" aria-pressed="false">◌ <span>El taller</span></button><button data-view="cinema" aria-pressed="false">▻ <span>El pequeño cine</span></button></nav>
+    <section class="world" aria-label="Tu rincón interactivo">
+      <div class="scene-header"><span id="scene-label">01 / EL JARDÍN DE LA CALMA</span><span>☾ &nbsp; bajo el mismo cielo</span></div>
+      <div id="garden" class="view"><div class="moon"></div><div class="land land-back"></div><div class="land land-front"></div><div class="garden-copy"><span>UN POCO DE TI, ECHANDO RAÍCES</span><h2>Las cosas bonitas<br>crecen a su tiempo.</h2></div><div id="flowers" aria-label="Flores de tu jardín"></div><button id="plant" class="light-button">+ &nbsp; Plantar una flor</button><p class="scene-hint">Cada flor puede ser una pequeña intención.</p></div>
+      <div id="stars" class="view" hidden><div class="center-copy"><span>MIRA HACIA ARRIBA</span><h2>Hay luz en las<br>cosas pequeñas.</h2><p>Toca las cinco estrellas para descubrir un mensaje.</p></div><div id="constellation"></div><p id="star-message" role="status"></p></div>
+      <div id="art" class="view" hidden><canvas id="canvas" aria-label="Lienzo para dibujar con el dedo o el ratón"></canvas><div class="art-tools"><span>Traza lo que sientes</span><button class="swatch selected" data-color="#ebbdaf" style="--swatch:#ebbdaf" aria-label="Rosa" aria-pressed="true"></button><button class="swatch" data-color="#d6c57f" style="--swatch:#d6c57f" aria-label="Dorado" aria-pressed="false"></button><button class="swatch" data-color="#94b7ac" style="--swatch:#94b7ac" aria-label="Verde" aria-pressed="false"></button><button id="clear">Borrar lienzo</button></div></div>
+      <div id="cinema" class="view" hidden><div class="cinema-frame"><div class="moon"></div><div class="land land-back"></div><div class="land land-front"></div><div class="film-text"><span>UNA PELÍCULA SIN PRISA</span><h2 id="film-title">La noche también florece.</h2><p id="film-caption">Quédate aquí. Mira cómo las luces se mueven.</p></div><div class="fireflies"></div></div><div class="cinema-tools"><button id="change-film">Cambiar de escena ↗</button><button id="pause-film" aria-pressed="false">Pausar movimiento</button></div></div>
+      <div id="toast" role="status"></div>
+    </section>
+    <div class="garden-controls"><button id="day-toggle" aria-pressed="false">☀ Visitar de día</button><label>Plantar <select id="flower-type"><option value="sunflower">Girasoles</option><option value="daisy">Margaritas</option></select></label><button id="letter-open">♡ Un sobre para ti</button></div>
+    <section class="below"><div><span class="little-star">✧</span><p><strong>A tu ritmo, como las flores.</strong><br>Hoy también puedes simplemente estar.</p></div><button id="breath">◯ &nbsp; Un momento para respirar <span>↗</span></button></section>
+    <section class="extras"><article><span class="eyebrow">UN PASEO SIN DESTINO</span><h2>Pequeños encuentros</h2><p>Sal a descubrir algo bonito. Puedes volver a visitar cada encuentro.</p><div class="encounters"><button data-discovery="butterfly">🦋 Una mariposa</button><button data-discovery="leaves">🍃 Entre las hojas</button><button data-discovery="light">✧ Una luciérnaga</button></div><p id="discovery-message" role="status">El paseo empieza donde tú quieras.</p></article><article><span class="eyebrow">DEL JARDÍN, PARA LLEVAR</span><h2>Una postal de este ratito</h2><p>Elige una flor, un cielo y unas palabras. Guarda tu postal como imagen.</p><div class="postcard-controls"><label>Flor<select id="card-flower"><option value="sunflower">Girasol</option><option value="daisy">Margarita</option></select></label><label>Cielo<select id="card-sky"><option value="night">Noche</option><option value="day">Día</option><option value="sunset">Atardecer</option></select></label></div><label class="card-phrase">Tus palabras<input id="card-phrase" maxlength="85" value="Besito en tu pollollo"></label><canvas id="postcard" width="1000" height="650" aria-label="Vista previa de tu postal"></canvas><button id="download-card">Descargar postal ↓</button><p id="download-status" role="status"></p></article></section>
+    <section class="movie-list"><span class="eyebrow">PRÓXIMAS FUNCIONES · A SU GUSTO</span><h2>Películas para ver juntos</h2><p>Guarda títulos y una razón para compartirlos. Esta lista se queda en este navegador.</p><form id="movie-form"><label>Película<input id="movie-name" maxlength="100" required placeholder="Una película que quieran ver"></label><label>¿Por qué juntos?<input id="movie-note" maxlength="180" required placeholder="Lo que te gustaría compartir con Isis"></label><button>Añadir a nuestra lista +</button></form><ul id="movies"></ul><p id="movie-status" role="status"></p></section>
+    <section class="install-panel" aria-label="Tu jardín como aplicación"><div><strong>Un rinconcito en tu pantalla</strong><p id="pwa-status" role="status">Instala tu jardín para tenerlo cerquita.</p></div><button id="install-app">Instalar mi jardín ↓</button><button id="update-app" hidden>Actualizar jardín</button></section>
+    <footer><span>Hecho con cariño, para tus días de sol y tus días de lluvia.</span><span>Sin metas. Sin prisa. Contigo.</span></footer>
+  </main>
+  <dialog id="breath-dialog"><button id="close-breath" aria-label="Cerrar">×</button><span class="eyebrow">UN MOMENTO PARA TI</span><h2>Encuentra tu propio ritmo.</h2><div class="breathing-orb">Aquí y ahora</div><p>Si te resulta cómodo, respira suavemente.<br>No hace falta seguir el círculo ni retener el aire.</p><small>Puedes parar cuando quieras.</small></dialog>
+  <dialog id="letter-dialog"><button id="close-letter" aria-label="Cerrar carta">×</button><span class="eyebrow">UN SOBRE ENTRE LAS FLORES</span><h2>Para ti, Isis.</h2><p id="letter-text"></p><p class="signature">Besito en tu pollollo ♡</p><button id="next-letter">Leer otra notita</button></dialog>
+</body></html>
