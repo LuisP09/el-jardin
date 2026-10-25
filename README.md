@@ -116,3 +116,20 @@ El sonido muestra su estado de pausa al volver de otra aplicación, requiere un 
 Referencias: [teclado y viewport en Chrome Android](https://developer.chrome.com/blog/viewport-resize-behavior/), [instalar aplicaciones web en Android](https://support.google.com/chrome/answer/9658361?co=GENIE.Platform%3DAndroid).
 
 Prueba pendiente en un Android real: salida por altavoz y audífonos; bloquear/desbloquear; cambiar de aplicación y reanudar; abrir el teclado en películas/postales; girar la pantalla; instalar desde HTTPS y abrir sin conexión. Las pruebas de escritorio y tamaños de pantalla no sustituyen estas comprobaciones del dispositivo.
+
+## En revisión local: jardinería y dirección visual
+
+Esta siguiente iteración aún no está publicada. Los parterres abren una mesa de jardinería con ocho lugares independientes. Puedes elegir semillas de girasol o margarita, tocar un lugar libre y usar la regadera para pasar de semilla a brote y a flor. Los parterres admiten mezclas de flores; no hay monedas, esperas obligatorias, agua limitada ni marchitamiento.
+
+El estado anterior migra conservando sus seis plantas y añade dos lugares libres por parterre. Se conserva la posición del personaje al llegar, soltar los controles o dejar la página. Luci acompaña al personaje y el mundo incorpora parterres de madera, senderos de piedra, árboles con gradientes y mariposas. Los efectos respetan movimiento reducido y la pausa del ambiente.
+
+Archivos de esta mecánica: `gardening-core.js` (estado y migración), `gardening.js` (interacción y dibujos), `gardening.css` (mesa de jardinería y pulido visual). `npm test` comprueba además la migración, las etapas individuales y la recuperación de la posición.
+La revisión usa `isis-game-v2`, leyendo `isis-game-v1` como punto de partida cuando no hay partida nueva. La copia antigua se conserva para que una pestaña de la versión publicada anterior no sobrescriba la jardinería nueva.
+
+## En revisión local: ilustración y animación
+
+Esta revisión sigue sin publicar. Se añadió un personaje vectorial con piernas, brazos, bolso, rostro y vista de espaldas; la dirección se deriva del desplazamiento real. La caminata usa la distancia recorrida para sincronizar pasos y acelera/frena de manera gradual. Luci sigue con amortiguación para evitar saltos al cambiar de dirección.
+
+El ambiente incorpora alas independientes en mariposas, ondulaciones del estanque, nenúfares, brisa en las copas y flores, halos lentos de faroles y una señal del destino al caminar. Las animaciones decorativas se pausan con un diálogo abierto, al ocultar la página o con «Pausar ambiente». La preferencia de pausa se guarda y los cambios del ajuste de movimiento reducido del dispositivo se aplican mientras está abierto el juego.
+
+El rediseño usa una insignia floral, iconos de los rincones, paleta de bosque y luz de miel, un marco suave y transiciones de día/noche. Todo se dibuja con SVG y CSS; no se descargan sprites ni videos. Los módulos nuevos (`motion.js`, `illustration.js`, `atmosphere.css`) forman parte de la caché sin conexión y del paquete estático.

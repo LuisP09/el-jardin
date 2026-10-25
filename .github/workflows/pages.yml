@@ -24,6 +24,10 @@ jobs:
           node --check app.js
           node --check game.js
           node --check game-core.js
+          node --check gardening.js
+          node --check gardening-core.js
+          node --check motion.js
+          node --check illustration.js
           node --check audio.js
           node --check soundscape.js
           node --check pwa.js

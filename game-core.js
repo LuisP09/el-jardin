@@ -2,6 +2,10 @@ export const WORLD = { width: 1400, height: 900, margin: 65 };
 export function clampPoint(point) {
   return { x: Math.max(WORLD.margin, Math.min(WORLD.width - WORLD.margin, point.x)), y: Math.max(WORLD.margin, Math.min(WORLD.height - WORLD.margin, point.y)) };
 }
+export function restorePosition(value) {
+  if (!value || !Number.isFinite(value.x) || !Number.isFinite(value.y)) return { x: 660, y: 690 };
+  return clampPoint(value);
+}
 export function moveTowards(from, to, distance) {
   const dx = to.x - from.x, dy = to.y - from.y, length = Math.hypot(dx, dy);
   if (length <= distance) return clampPoint(to);

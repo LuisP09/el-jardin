@@ -40,7 +40,7 @@ for (const path of ['/', '/el-jardin/']) {
     w.listeners.install({ waitUntil: promise => { work = promise; } });
     await work;
     w.state.offline = true;
-    for (const file of ['./', 'index.html', 'app.js', 'style.css', 'game.js', 'game.css', 'game-core.js', 'audio.js', 'soundscape.js', 'pwa.js', 'manifest.webmanifest', 'icons/icon-512.png']) {
+    for (const file of ['./', 'index.html', 'app.js', 'style.css', 'game.js', 'game.css', 'game-core.js', 'gardening.js', 'gardening-core.js', 'motion.js', 'illustration.js', 'atmosphere.css', 'gardening.css', 'audio.js', 'soundscape.js', 'pwa.js', 'manifest.webmanifest', 'icons/icon-512.png']) {
       let response;
       w.listeners.fetch({ request: { url: new URL(file, scope).href, method: 'GET' }, respondWith: value => { response = value; } });
       assert.match(await response, /^cached:/);

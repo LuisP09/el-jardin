@@ -1,0 +1,72 @@
+/* Movimiento en capas: sin filtros animados ni partículas creadas por fotograma. */
+.tree-canopy{transform-box:fill-box;transform-origin:50% 100%;animation:canopy-breeze 8s ease-in-out infinite alternate}
+.field-flower{transform-box:fill-box;transform-origin:50% 100%;animation:flower-breeze 6s ease-in-out infinite alternate}
+.pond-ripple{transform-box:fill-box;transform-origin:center;animation:pond-ring 7s linear infinite;fill:none;stroke:#b7d4be;stroke-width:1;opacity:0}
+.pond-sheen{animation:pond-shimmer 9s ease-in-out infinite alternate}
+.lily-drift{transform-box:fill-box;transform-origin:center;animation:lily-turn 10s ease-in-out infinite alternate}
+.butterfly-left,.butterfly-right{transform-box:fill-box;animation:wing-flutter .7s ease-in-out infinite alternate}
+.butterfly-left{transform-origin:right center}.butterfly-right{transform-origin:left center;animation-delay:-.15s}
+.luci-wing{transform-box:fill-box;transform-origin:center;animation:luci-wings .55s ease-in-out infinite alternate}
+.luci-halo{animation:luci-light 5s ease-in-out infinite alternate}
+.lantern-halo{animation:lantern-breathe 8s ease-in-out infinite alternate}
+.station-mark{fill:#254e40;stroke:#c6ba8c;stroke-width:1;filter:drop-shadow(0 2px 1px #15362b44)}
+.station-icon{fill:none;stroke:#e0d3a5;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.map-station.nearest .station-mark{fill:#58704d;stroke:#e8d79f}.map-station.nearest .station-icon{stroke:#fff1bf}
+.map-station.guiding .station-mark{stroke:#eddda8;fill:#526d4f}.station-label{font-size:9px;font-weight:500;fill:#e7e2c5;stroke:#244a3d;stroke-width:3}
+.tap-beacon{opacity:0;pointer-events:none}.tap-beacon.active{opacity:1}.tap-beacon.active .tap-ring{animation:destination-ring 2.5s ease-out infinite;transform-box:fill-box;transform-origin:center}
+.actor-back{display:none}#player[data-facing=up] .actor-back{display:inline}#player[data-facing=up] .actor-front{display:none}
+#player[data-facing=right] .actor-front,#player[data-facing=left] .actor-front{transform:translateX(1px)}
+#player.walking #player-body{animation:none}
+.scene-paused .tree-canopy,.scene-paused .field-flower,.scene-paused .pond-ripple,.scene-paused .pond-sheen,.scene-paused .lily-drift,.scene-paused .garden-butterfly,.scene-paused .butterfly-left,.scene-paused .butterfly-right,.scene-paused .luci-wing,.scene-paused .luci-halo,.scene-paused .lantern-halo,.scene-paused .ambient-mote{animation-play-state:paused}
+.motion-muted .tree-canopy,.motion-muted .field-flower,.motion-muted .pond-ripple,.motion-muted .pond-sheen,.motion-muted .lily-drift,.motion-muted .garden-butterfly,.motion-muted .butterfly-left,.motion-muted .butterfly-right,.motion-muted .luci-wing,.motion-muted .luci-halo,.motion-muted .lantern-halo,.motion-muted .ambient-mote,.motion-muted .tap-ring{animation:none!important}
+.motion-muted .pond-ripple{opacity:.15}.motion-muted .tap-ring{opacity:.5}
+.garden-slot:not(.just-tended)[data-stage="3"] .flower-stem{transform-origin:0 10px;animation:close-flower-breeze 6s ease-in-out infinite alternate}
+.motion-muted .flower-stem,.motion-muted .water-drops,.motion-muted .breathing-orb,.motion-muted #pond-water.ripple>span{animation:none!important}
+@keyframes canopy-breeze{from{transform:rotate(-.65deg)}to{transform:rotate(.65deg)}}
+@keyframes flower-breeze{from{transform:rotate(-1.8deg)}to{transform:rotate(1.8deg)}}
+@keyframes close-flower-breeze{from{transform:rotate(-1deg)}to{transform:rotate(1deg)}}
+@keyframes pond-ring{0%{transform:scale(.55);opacity:0}15%{opacity:.25}100%{transform:scale(1.5);opacity:0}}
+@keyframes pond-shimmer{from{opacity:.2}to{opacity:.4}}
+@keyframes lily-turn{from{transform:rotate(-2deg)}to{transform:rotate(2deg)}}
+@keyframes wing-flutter{from{transform:scaleX(.4)}to{transform:scaleX(1)}}
+@keyframes luci-wings{from{transform:scaleY(.45)}to{transform:scaleY(1)}}
+@keyframes luci-light{from{opacity:.65}to{opacity:1}}
+@keyframes lantern-breathe{from{opacity:.72}to{opacity:.9}}
+@keyframes destination-ring{0%{transform:scale(.6);opacity:.65}100%{transform:scale(1.35);opacity:0}}
+/* Paleta de bosque al anochecer: verde tinta, luz de miel y papel cálido. */
+#game-root{background:linear-gradient(140deg,#f0ecdf,#e0e5d3)}.game-stage{border-radius:23px;border-color:#72876b;box-shadow:0 8px 30px #36523c22}
+.game-stage:before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;box-shadow:inset 0 0 65px #102d2724,inset 0 0 0 4px #c8d0a50b;border-radius:inherit}
+.game-top{border-bottom:none}.game-logo{gap:10px}.game-logo>svg{width:34px;height:38px;flex-shrink:0}.game-logo>span{font-size:23px;letter-spacing:-.6px}.game-logo small{font-size:7px;letter-spacing:2px;color:#83916f}
+.game-actions button{background:#f7f2e599;border:1px solid #c7cfb4;color:#57704c;box-shadow:inset 0 1px 0 #ffffff66}.game-actions button:hover{background:#f7f2e5}
+.location-label{z-index:2;letter-spacing:1.6px;color:#d4dcb7;background:#173e3533;padding:7px 10px;border:1px solid #bbc89f20;border-radius:20px;top:17px;left:19px}
+.direction-pad button{border-radius:13px;background:linear-gradient(140deg,#47644a,#304f3d);border-color:#aebd8b66;box-shadow:0 3px 0 #102f26,inset 0 1px 0 #c7d6a22b;color:#e6e2bd}
+.direction-pad button:active{background:#657f52;box-shadow:0 1px 0 #102f26;transform:translateY(2px)}
+.game-context button:not(:disabled){background:linear-gradient(#ecdda9,#d4bd83);border-color:#f0e1b5;box-shadow:0 3px 0 #927d4d88,inset 0 1px 0 #fff5d1;color:#3c5236}
+.game-context button:not(:disabled):active{transform:translateY(2px);box-shadow:0 1px 0 #927d4d88}
+.companion-panel{border-radius:14px;background:linear-gradient(100deg,#f6f1e4,#eeefdf);border-color:#ced4bc}.luci-badge{border:1px solid #e3d6a1;box-shadow:inset 0 1px 4px #fff4ce}
+.game-stage.day .station-mark{fill:#7c9565;stroke:#e4d6a4}.game-stage.day .station-icon{stroke:#fcf0c9}.game-stage.day .station-label{fill:#3c5e3c;stroke:#b6c590}
+.game-welcome{background:linear-gradient(90deg,#153e35ef 10%,#153e35c9 45%,#153e3520);backdrop-filter:none}
+#gardening-dialog{border-color:#ded3b8;box-shadow:0 30px 100px #102d2966}.gardening-landscape{background:linear-gradient(#224c42,#57754d 85%,#72835a)}
+.garden-day .gardening-landscape{background:linear-gradient(#b7ceb6,#b4c797 75%,#8c9e70)}.garden-toolbench button{border-radius:14px;box-shadow:0 3px 0 #d8ceb5,inset 0 1px 0 #fffdf5}
+.garden-toolbench button[aria-pressed=true]{background:linear-gradient(#e8ecd8,#dae2c7);border-color:#95a77c;box-shadow:0 3px 0 #adbb92,inset 0 1px 0 #fafbe8}
+dialog:not(#activity-dialog){border:1px solid #ded7c0;box-shadow:0 24px 80px #153c3433}dialog::backdrop{background:#143c34aa;backdrop-filter:blur(4px)}
+@media(max-width:750px){.game-stage{border-radius:17px}.game-logo>svg{width:26px;height:30px}.game-logo>span{font-size:17px}.game-logo small{font-size:6px;letter-spacing:1.2px}.location-label{font-size:6px;top:12px;left:12px;padding:6px 8px;max-width:calc(100% - 24px)}.game-stage:before{box-shadow:inset 0 0 35px #102d271a}.companion-panel{border-radius:12px}.direction-pad button{border-radius:11px}}
+@media(max-width:360px){.game-logo>svg{width:21px}.game-logo>span{font-size:14px}.game-logo{gap:5px}}
+@media(prefers-reduced-motion:reduce){.tree-canopy,.field-flower,.pond-ripple,.pond-sheen,.lily-drift,.butterfly-left,.butterfly-right,.luci-wing,.luci-halo,.lantern-halo,.tap-ring,.flower-stem{animation:none!important}.pond-ripple{opacity:.15}}
+#ground stop,#leaf-deep stop{transition:stop-color 1.6s ease}.motion-muted #ground stop,.motion-muted #leaf-deep stop{transition:none}.game-stage.day .luci-halo{opacity:.4;animation:none}.game-stage.day .pond-ripple{stroke:#d7e9cb}
+@media(prefers-reduced-motion:reduce){#ground stop,#leaf-deep stop{transition:none}}
+#map-plants .flower-stem{transform-origin:0 10px;animation:close-flower-breeze 7s ease-in-out infinite alternate}.scene-paused #map-plants .flower-stem{animation-play-state:paused}
+
+/* Quiet discoveries remain optional; Luci points without covering the path. */
+.encounter-glow{fill:#eedba1;opacity:.08;stroke:#efdfaa;stroke-width:1}
+.encounter-symbol{fill:#f1deab;font-size:23px;opacity:.65}
+.garden-encounter.noticed .encounter-glow{opacity:.45}
+.garden-encounter.noticed .encounter-symbol{opacity:1}
+.wandering-leaf{fill:#b7bc86;stroke:#7b9367;stroke-width:.7;animation:leaf-journey 13s ease-in-out infinite;opacity:.7}
+@keyframes leaf-journey{0%,100%{transform:translate(-7px,-4px) rotate(-12deg)}50%{transform:translate(12px,7px) rotate(32deg)}}
+#discovery-dialog{max-width:420px;text-align:center}
+#discovery-symbol{font-size:64px;color:#a48743;margin:12px}
+#discovery-text{line-height:1.8}
+.scene-paused .wandering-leaf,.paused-ambient .wandering-leaf{animation-play-state:paused}
+.motion-muted .wandering-leaf{animation:none}
+@media(prefers-reduced-motion:reduce){.wandering-leaf{animation:none}}
