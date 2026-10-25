@@ -39,7 +39,7 @@ if ('serviceWorker' in navigator && window.isSecureContext) {
       const offerUpdate = () => {
         if (!registration.waiting) return;
         updateButton.hidden = false;
-        pwaStatus.textContent = 'Hay una nueva versión. Puedes actualizar cuando termines: la página se recargará y se borrarán el dibujo y la postal en curso. Las flores y películas guardadas se conservan.';
+        pwaStatus.textContent = 'Hay una nueva versión. Puedes actualizar cuando termines: la página se recargará y se borrarán el dibujo y la postal en curso. Tu paseo, flores y películas guardados se conservan.';
       };
       offerUpdate();
       registration.addEventListener('updatefound', () => {

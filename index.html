@@ -13,8 +13,29 @@
   <meta name="apple-mobile-web-app-title" content="Jardín de Isis">
   <script src="pwa.js" defer></script>
   <link rel="stylesheet" href="style.css"><script src="app.js" defer></script>
+  <link rel="stylesheet" href="game.css"><script src="game.js" type="module"></script>
 </head>
 <body>
+  <div id="game-root">
+    <div class="game-top"><a href="./" class="game-logo">✳ <span>el jardín de Isis<small>UN PEQUEÑO MUNDO PARA TI</small></span></a><div class="game-actions"><button id="game-time" aria-pressed="false" aria-label="Cambiar entre día y noche">☾ Noche</button><button id="game-sound" aria-pressed="false">♪ Sonido</button><button id="game-menu">☰ <span>Mi mochila</span></button></div></div>
+    <main class="game-stage" aria-label="Juego del jardín de Isis">
+      <svg id="game-map" viewBox="0 0 840 540" role="group" aria-label="Jardín explorable. Usa las flechas o WASD para caminar, o toca un lugar para ir hasta él."><defs>
+        <radialGradient id="ground"><stop stop-color="#345f51"/><stop offset="1" stop-color="#193e38"/></radialGradient>
+        <radialGradient id="pond-fill"><stop stop-color="#508c89"/><stop offset="1" stop-color="#264f56"/></radialGradient>
+        <radialGradient id="lamp-glow"><stop stop-color="#f8da8d" stop-opacity=".45"/><stop offset="1" stop-color="#f8da8d" stop-opacity="0"/></radialGradient>
+        <filter id="soft-shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="7" stdDeviation="5" flood-color="#091f21" flood-opacity=".25"/></filter>
+      </defs><g id="map-scenery"></g><g id="map-plants"></g><g id="map-stations"></g><g id="map-effects" aria-hidden="true"></g><g id="player" aria-hidden="true"><ellipse cy="20" rx="17" ry="7" fill="#102f2b" opacity=".45"/><g id="player-body"><path d="M-7 6l-5 15m19-15l5 15" stroke="#dbc8ad" stroke-width="6" stroke-linecap="round"/><path d="M-9-8Q0-14 9-8L17 13Q0 23-17 13Z" fill="#d7b9a0"/><path d="M-10-6L-18 4m28-10l8 10" stroke="#d7b9a0" stroke-width="7" stroke-linecap="round"/><ellipse cy="-22" rx="14" ry="17" fill="#493d36"/><ellipse cy="-19" rx="10" ry="12" fill="#edc7a0"/><path d="M-12-22Q-8-40 11-27L13-16Q3-20 0-27Q-6-20-12-19" fill="#493d36"/><circle cx="7" cy="-32" r="5" fill="#edce67"/></g></g></svg>
+      <div class="location-label"><span class="live-dot"></span><span id="game-location">EL JARDÍN DE LOS PEQUEÑOS COMIENZOS</span></div>
+      <div class="game-invitation"><span>✧ TU COMPAÑERA DE PASEO</span><p id="game-guide">La luciérnaga te espera junto a las flores.</p><button id="follow-light">Seguir su luz ↗</button></div>
+      <div class="game-dialogue" role="status"><span id="speaker">Luci, la luciérnaga</span><p id="game-message">Hola, Isis. Este lugar es tuyo. ¿Damos un paseíto?</p></div>
+      <div class="game-context"><span id="nearby-label">Toca el camino para caminar</span><button id="game-interact" disabled>Acércate a un rincón <kbd>E</kbd></button></div>
+      <div class="direction-pad" aria-label="Controles para caminar"><button data-move="up" aria-label="Caminar arriba">↑</button><button data-move="left" aria-label="Caminar a la izquierda">←</button><button data-move="down" aria-label="Caminar abajo">↓</button><button data-move="right" aria-label="Caminar a la derecha">→</button></div>
+      <div class="game-bottom-note"><span>FLECHAS / WASD · E PARA INTERACTUAR</span><span>o toca un lugar para explorarlo</span></div>
+      <section id="game-welcome" class="game-welcome"><div><span class="eyebrow">UN JUEGO SIN PRISA, PARA ISIS</span><h1>Un jardín.<br>Mil pequeños <em>refugios.</em></h1><p>Camina entre girasoles, despierta las estrellas<br>y deja que una lucecita te acompañe.</p><button id="enter-garden">Entrar a mi jardín <span>↗</span></button><small>Tu paseo se guarda en este dispositivo.<br>No hay nada que ganar. Solo un lugar que habitar.</small></div></section>
+    </main>
+    <div class="game-foot"><span>♡ Besito en tu pollollo</span><button id="game-rest">Necesito un momento tranquilo</button><button id="game-help">Cómo jugar</button></div>
+  </div>
+  <dialog id="activity-dialog"><button id="close-activity" class="close-game-panel" aria-label="Volver al jardín">← Volver al jardín</button>
   <header><a class="brand" href="./">✳ <span>el jardín de Isis</span></a><span class="header-note">Besito en tu pollollo</span><button id="sound" aria-pressed="false">♪ Sonido apagado</button></header>
   <main>
     <section class="intro"><div class="eyebrow">PARA ISIS, CON CARIÑO · ABIERTO SIEMPRE</div><h1>El mundo puede esperar.<br><em>Este jardín es tuyo, Isis.</em></h1><p>Girasoles para tus días de sol. Margaritas bajo las estrellas.<br class="desktop"> Y un besito en tu pollollo, siempre.</p><button id="simple-mode" aria-pressed="false">Hoy necesito algo sencillo</button></section>
@@ -34,6 +55,10 @@
     <section class="install-panel" aria-label="Tu jardín como aplicación"><div><strong>Un rinconcito en tu pantalla</strong><p id="pwa-status" role="status">Instala tu jardín para tenerlo cerquita.</p></div><button id="install-app">Instalar mi jardín ↓</button><button id="update-app" hidden>Actualizar jardín</button></section>
     <footer><span>Hecho con cariño, para tus días de sol y tus días de lluvia.</span><span>Sin metas. Sin prisa. Contigo.</span></footer>
   </main>
+  </dialog>
   <dialog id="breath-dialog"><button id="close-breath" aria-label="Cerrar">×</button><span class="eyebrow">UN MOMENTO PARA TI</span><h2>Encuentra tu propio ritmo.</h2><div class="breathing-orb">Aquí y ahora</div><p>Si te resulta cómodo, respira suavemente.<br>No hace falta seguir el círculo ni retener el aire.</p><small>Puedes parar cuando quieras.</small></dialog>
   <dialog id="letter-dialog"><button id="close-letter" aria-label="Cerrar carta">×</button><span class="eyebrow">UN SOBRE ENTRE LAS FLORES</span><h2>Para ti, Isis.</h2><p id="letter-text"></p><p class="signature">Besito en tu pollollo ♡</p><button id="next-letter">Leer otra notita</button></dialog>
+  <dialog id="backpack"><button id="close-backpack" class="close-game-panel">← Volver al jardín</button><span class="eyebrow">TU MOCHILA DE PEQUEÑOS RECUERDOS</span><h2>Cada paseo deja algo bonito.</h2><p>Elige un rincón y caminaremos hasta allí. Puedes visitarlos en cualquier orden.</p><div id="map-destinations"></div><p id="game-saved" role="status"></p><div class="backpack-actions"><button id="open-postcards">Crear una postal</button><button id="open-install">Instalar / actualizar</button><button id="motion-toggle" aria-pressed="false">Pausar ambiente</button></div></dialog>
+  <dialog id="pond-dialog"><button id="close-pond" class="close-game-panel">← Volver al jardín</button><span class="eyebrow">EL ESTANQUE DE LOS SENTIDOS</span><h2>Haz espacio para este instante.</h2><p id="pond-prompt">Toca el agua y observa cómo se abre una onda. Si te apetece, busca un color a tu alrededor.</p><button id="pond-water" aria-label="Tocar el agua y crear una onda"><span>◌</span><small>Tocar el agua</small></button><p id="pond-caption" role="status">Puedes quedarte aquí todo lo que quieras.</p><button id="pond-again">Volver a empezar</button></dialog>
+  <dialog id="help-dialog"><button id="close-help" class="close-game-panel">← Volver al jardín</button><span class="eyebrow">CÓMO HABITAR TU JARDÍN</span><h2>Todo empieza con un pasito.</h2><p>Toca un rincón para caminar hasta él. También puedes usar las flechas, WASD o los botones de dirección.</p><p>Cuando estés cerca, pulsa el botón de acción o la tecla E. En los parterres puedes sembrar, regar y ver florecer. Luci te propone un paseo y tu mochila permite elegir cualquier destino.</p><p>No hay derrotas, rachas ni tiempo límite. Puedes cerrar una actividad o descansar cuando quieras.</p></dialog>
 </body></html>

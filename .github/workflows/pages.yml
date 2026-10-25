@@ -22,10 +22,12 @@ jobs:
       - name: Comprobar JavaScript
         run: |
           node --check app.js
+          node --check game.js
+          node --check game-core.js
           node --check pwa.js
           node --check sw.js
       - name: Probar caché sin conexión y aislamiento entre proyectos
-        run: node --test tests/pwa.test.mjs
+        run: node --test tests/*.test.mjs
       - name: Preparar y verificar archivos públicos
         run: node scripts/build.mjs
       - name: Configurar Pages

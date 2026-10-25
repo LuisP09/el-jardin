@@ -78,3 +78,17 @@ Una experiencia de descanso y creatividad, sin promesas de tratamiento. Incluye 
 - Modo sencillo con las opciones mirar, dibujar y leer una notita.
 
 Los textos iniciales de las cartas están en `letters`, en `app.js`; son propuestas para personalizar. Las películas se añaden desde la propia interfaz. El jardín y las películas usan almacenamiento local; el dibujo y la postal se conservan solo mientras la página permanezca abierta.
+
+## El jardín como juego
+
+La pantalla principal ahora es un mundo ilustrado que se recorre con un personaje y cámara móvil. Luci, una luciérnaga, acompaña el paseo con sugerencias opcionales.
+
+- Toca un rincón para caminar hasta él y abrir su actividad al llegar. Tocar el suelo mueve al personaje sin abrir actividades.
+- En computadora: flechas o WASD para caminar; E para interactuar. En celular: cruceta o toques sobre el mundo.
+- Sembrar, regar y ver florecer girasoles y margaritas son tres acciones sin esperas ni mantenimiento diario.
+- El estanque invita a tocar el agua y explorar colores, texturas y sonidos a tu alrededor, siempre de forma opcional.
+- El buzón, observatorio, taller y cine abren las actividades originales desde el mundo. Las postales, instalación y actualización están en «Mi mochila».
+- La mochila permite elegir destinos y muestra recuerdos de las actividades realizadas. El paseo se guarda localmente con la clave `isis-game-v1`; no se envía a un servidor.
+- Cambia entre día y noche, pausa el ambiente o abre «Necesito un momento tranquilo» cuando quieras. No hay enemigos, puntuación, cronómetros, rachas ni penalizaciones.
+
+Comprueba la lógica de movimiento y la caché con `npm test`; prepara la PWA con `npm run build`. No se requieren paquetes ni instalación de dependencias.
