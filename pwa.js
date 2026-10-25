@@ -2,13 +2,14 @@ const installButton = document.querySelector('#install-app');
 const updateButton = document.querySelector('#update-app');
 const pwaStatus = document.querySelector('#pwa-status');
 let installPrompt;
+const localPreview = ['localhost', '127.0.0.1'].includes(location.hostname) && new URLSearchParams(location.search).has('preview');
 
 function installed() {
   return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 }
 function installationHelp() {
   if (installed()) return 'Tu jardín ya está abierto como aplicación.';
-  return 'Para instalarlo, abre el menú del navegador y busca «Instalar aplicación» o «Añadir a pantalla de inicio». En iPhone o iPad: Safari → Compartir → Añadir a pantalla de inicio.';
+  return 'En Android: abre el jardín en Chrome, toca el menú ⋮ y elige «Añadir a pantalla de inicio» → «Instalar». Según tu versión puede aparecer directamente «Instalar aplicación». En iPhone o iPad: Safari → Compartir → Añadir a pantalla de inicio.';
 }
 installButton.hidden = installed();
 installButton.addEventListener('click', async () => {
@@ -21,13 +22,18 @@ installButton.addEventListener('click', async () => {
   installPrompt = null;
 });
 window.addEventListener('beforeinstallprompt', event => {
-  event.preventDefault(); installPrompt = event; installButton.hidden = false;
+  event.preventDefault();
+  if (localPreview || installed()) return;
+  installPrompt = event; installButton.hidden = false;
 });
 window.addEventListener('appinstalled', () => {
   installButton.hidden = true; installPrompt = null; pwaStatus.textContent = 'Tu jardín está instalado. ♡';
 });
 
-if ('serviceWorker' in navigator && window.isSecureContext) {
+if (localPreview) {
+  installButton.hidden = true;
+  pwaStatus.textContent = 'Vista previa local. Estos cambios todavía no están publicados.';
+} else if ('serviceWorker' in navigator && window.isSecureContext) {
   let refreshing = false;
   let applyingUpdate = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {

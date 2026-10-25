@@ -92,3 +92,27 @@ La pantalla principal ahora es un mundo ilustrado que se recorre con un personaj
 - Cambia entre día y noche, pausa el ambiente o abre «Necesito un momento tranquilo» cuando quieras. No hay enemigos, puntuación, cronómetros, rachas ni penalizaciones.
 
 Comprueba la lógica de movimiento y la caché con `npm test`; prepara la PWA con `npm run build`. No se requieren paquetes ni instalación de dependencias.
+
+## Revisión local: móvil, Luci y audio
+
+Esta revisión incorpora el pulido de la interfaz móvil y el audio. La publicación utiliza el workflow de GitHub Actions del repositorio.
+
+- Luci aparece en una franja plegable fuera del mapa. El mensaje completo se abre a petición; al iniciar un paseo se contrae. Los mensajes se anuncian de forma discreta a los lectores de pantalla.
+- En móvil y horizontal, la cruceta y la acción tienen una zona propia fuera del mapa. Se respetan los bordes seguros del dispositivo y se usan alturas dinámicas de pantalla.
+- La escena se limita a 30 actualizaciones por segundo, se detiene cuando la página está oculta y deja de reconstruir controles y medir el diseño en cada fotograma.
+- El panel de sonido ofrece lluvia, arroyo y brisa sintetizados localmente. No usa archivos remotos, anuncios ni sonidos repentinos. Las texturas no son grabaciones de naturaleza.
+- El sonido requiere activación manual. Permite ajustar el volumen, apagar, cambiar con transición y reanudar después de volver del segundo plano. Se guardan ambiente y volumen, sin reproducción automática al abrir.
+- El medidor representa la señal generada, no el nivel físico del altavoz ni una medida en decibelios. La escucha final se debe revisar en un teléfono real.
+- La selección es opcional y personal; no se atribuyen propiedades terapéuticas a una frecuencia. Referencias de diseño: [NHS inform sobre música y relajación](https://www.nhsinform.scot/healthy-living/mental-wellbeing/breathing-and-relaxation-exercises/distraction-techniques/) y [OMS sobre escucha segura](https://www.who.int/news-room/questions-and-answers/item/deafness-and-hearing-loss-safe-listening).
+
+Para revisar sin caché de PWA: ejecuta `npm run build`, sirve `_site/` localmente y abre `http://localhost:4176/?preview=1`. En ese modo local se omite registrar el service worker. Al publicar mediante HTTPS, el modo sin conexión sigue habilitado normalmente.
+
+### Dispositivo principal: Android
+
+La revisión se orienta a Chrome en Android. Se añadió `interactive-widget=resizes-content` para que el teclado de los formularios reduzca el espacio disponible y `viewport-fit=cover` para respetar los bordes seguros. La cruceta evita menús de pulsación larga; los campos en dispositivos táctiles usan texto de 16 px.
+
+El sonido muestra su estado de pausa al volver de otra aplicación, requiere un toque para reanudar y puede reconstruir el motor si el navegador cierra su contexto de audio. La guía de instalación prioriza Chrome en Android. La publicación de esta revisión fue autorizada por el usuario.
+
+Referencias: [teclado y viewport en Chrome Android](https://developer.chrome.com/blog/viewport-resize-behavior/), [instalar aplicaciones web en Android](https://support.google.com/chrome/answer/9658361?co=GENIE.Platform%3DAndroid).
+
+Prueba pendiente en un Android real: salida por altavoz y audífonos; bloquear/desbloquear; cambiar de aplicación y reanudar; abrir el teclado en películas/postales; girar la pantalla; instalar desde HTTPS y abrir sin conexión. Las pruebas de escritorio y tamaños de pantalla no sustituyen estas comprobaciones del dispositivo.

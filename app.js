@@ -47,14 +47,6 @@ const films=[['La noche también florece.','Quédate aquí. Mira cómo las luces
 $('#change-film').onclick=()=>{film=(film+1)%films.length;$('#film-title').textContent=films[film][0];$('#film-caption').textContent=films[film][1];$('.cinema-frame').style.background=films[film][2];};
 $('#pause-film').onclick=()=>{const paused=$('#cinema').classList.toggle('paused');$('#pause-film').textContent=paused?'Reanudar movimiento':'Pausar movimiento';$('#pause-film').setAttribute('aria-pressed',String(paused));};
 $('#breath').onclick=()=>$('#breath-dialog').showModal();$('#close-breath').onclick=()=>$('#breath-dialog').close();
-let audioContext,master,playing=false;
-$('#sound').onclick=async()=>{
-  try {
-    if(!audioContext){audioContext=new AudioContext();master=audioContext.createGain();master.gain.value=0;master.connect(audioContext.destination);[174.61,261.63,349.23].forEach((frequency,i)=>{const osc=audioContext.createOscillator(),gain=audioContext.createGain();osc.frequency.value=frequency;gain.gain.value=.035/(i+1);osc.connect(gain);gain.connect(master);osc.start();});}
-    await audioContext.resume();playing=!playing;master.gain.setTargetAtTime(playing?1:0,audioContext.currentTime,.5);$('#sound').textContent=playing?'♪ Sonido encendido':'♪ Sonido apagado';$('#sound').setAttribute('aria-pressed',String(playing));
-  } catch {toast('El sonido no está disponible en este navegador.');}
-};
-
 // Día y noche se eligen libremente, sin depender del reloj.
 $('#day-toggle').onclick=()=>{const day=$('.world').classList.toggle('day');$('#day-toggle').textContent=day?'☾ Visitar de noche':'☀ Visitar de día';$('#day-toggle').setAttribute('aria-pressed',String(day));$('#flower-type').value=day?'sunflower':'daisy';};
 const letters=[
