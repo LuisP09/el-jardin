@@ -19,9 +19,10 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 - Repositorio: https://github.com/LuisP09/el-jardin
 - Sitio público: https://luisp09.github.io/el-jardin/
 - Rama de publicación: `main`; un push activa `.github/workflows/pages.yml`.
-- Último commit publicado y verificado: `bb6d31dc234a1084511bb31cc80f82b66a043b30`.
-- Despliegue verificado: https://github.com/LuisP09/el-jardin/actions/runs/40168898682 (completado correctamente).
-- **Publicación de la segunda fase, menús y mapa autorizada por el usuario; despliegue y verificación en curso.**
+- Versión funcional publicada y verificada: `75f9a3ab2cb6e8ee4c9d3e42155a9b7c411ca915`. Los commits posteriores de documentación no cambian esa versión funcional.
+- Despliegue verificado: https://github.com/LuisP09/el-jardin/actions/runs/40172945161 (completado correctamente).
+- **Segunda fase, menús de juego, mapa ampliado y correcciones de caminos publicados con autorización del usuario. GitHub Actions y archivos públicos verificados.**
+- Caché offline publicada: `3104c95a85bfb98a`; incluye los módulos del mapa, menús y segunda fase. El hash de CI puede diferir del local por los finales de línea de los archivos.
 - No hacer commit/push para publicar ni activar despliegues sin autorización del usuario.
 - Vista previa de la segunda fase: http://localhost:4176/?preview=1&review=phase-two
 - La vista previa requiere el servidor local activo; el enlace no es accesible desde el celular de Isis como si fuera un sitio público.
@@ -59,7 +60,7 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 - El buzón y el sobre escondido conservan textos incluidos en el juego. No reintroducir un formulario que parezca enviar cartas entre teléfonos.
 - Las estructuras antiguas de cartas pueden seguir preservándose internamente por compatibilidad con copias; no constituyen una función visible activa.
 
-## Segunda fase: implementada solo en local
+## Segunda fase: publicada
 
 1. **Invernadero:** tres semillas (girasol, margarita y luz de estrella), seis mezclas independientes del orden y tres etapas de crecimiento. Repetir una mezcla no duplica ni reinicia la planta. Las flores especiales permanecen entre días.
 2. **Visitantes:** Miso, el gatito, siempre disponible; Nube, el conejito, con flores abiertas; Brisa, el petirrojo, con macetas o farolitos. Se pueden acompañar y acariciar. Las visitas se registran en el cuaderno.
@@ -73,7 +74,7 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 - El progreso nuevo vive en `phase2` dentro de la partida existente y se incluye en las copias JSON.
 - El botón de regreso de estos paneles permanece disponible al desplazarse.
 
-## Menús de juego (mejora local posterior)
+## Menús de juego (publicados)
 
 - Petición del usuario: que los menús se sientan parte del juego, en lugar de páginas web.
 - Mochila convertida en inventario con cuatro compartimentos: Rincones, Paseos, Mis cosas y Ajustes. Cada compartimento muestra solo sus controles.
@@ -85,9 +86,9 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 - Implementación: `game-menus.js` y `game-menus.css`, integrados en el build y la caché offline.
 - Verificado en navegador: cambiar página del cuaderno, abrir las herramientas, separar decoración/copia, navegar por teclado; inventario a 320×640, 390×844, 844×390 y 1280×800, sin desbordamiento horizontal y con botones visibles de al menos 44 px de alto.
 - Vista previa: http://localhost:4176/?preview=1&review=game-menus
-- Estado: **solo local**, pendiente de revisión y autorización para publicar, junto con la segunda fase.
+- Estado: **publicado** con la segunda fase, tras autorización del usuario.
 
-## Mapa ampliado (solo local)
+## Mapa ampliado (publicado)
 
 - Mundo ampliado de 1400×900 a **3000×2000**, más de cuatro veces el área anterior. Se conservan las coordenadas válidas de las partidas antiguas y los parterres de la zona inicial.
 - Seis regiones: jardín de los comienzos, colina de estrellas, valle del invernadero, bosque de visitantes, pradera compartida y ribera de sauces.
@@ -100,15 +101,15 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 - Pruebas automatizadas: **32 aprobadas**, con cobertura de conectividad, seguridad de rutas, migración de posiciones/objetos y cámara en cuatro tamaños.
 - Revisión de navegador: llegada al invernadero mediante los senderos, cámara alejada, minimapa y mapa general. La vista general no desborda horizontalmente a 320×640, 390×844, 844×390 y 1280×800; botones HTML de al menos 44 px.
 - Vista previa: http://localhost:4176/?preview=1&review=expanded-world
-- Pendiente de revisión del usuario; no publicado.
+- Publicado con autorización del usuario; continuar las nuevas mejoras en local.
 
-## Pulido de senderos y desplazamiento (local)
+## Pulido de senderos y desplazamiento (publicado)
 
 - Corregidas las uniones superpuestas: la red completa se pinta en tres capas continuas, en lugar de dibujar bordes y transparencias por cada tramo. Se retiró la línea central punteada decorativa.
 - Eliminado el umbral de 200 unidades que enviaba un toque lejano a la red de caminos. Los toques al terreno libre van directamente cuando hay paso.
 - Si el estanque interrumpe el paso, una búsqueda local de visibilidad rodea su borde; no obliga a volver a un cruce distante.
 - La selección de destinos conserva la navegación por senderos. Los controles manuales y la prevención de entrar al agua se mantienen.
-- Validación: 35 pruebas aprobadas, incluyendo toques largos, rodeo corto del estanque, llegada simulada sin atascarse y distinción entre terreno libre y destinos. Compilación y revisión visual de las uniones. Solo local.
+- Validación: 35 pruebas aprobadas, incluyendo toques largos, rodeo corto del estanque, llegada simulada sin atascarse y distinción entre terreno libre y destinos. Compilación y revisión visual de las uniones. Publicado y verificado.
 - Vista previa: http://localhost:4176/?preview=1&review=paths
 
 ## Archivos principales
@@ -156,10 +157,9 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 
 ## Pendiente
 
-- Completar y verificar el despliegue autorizado de la segunda fase, menús y mapa; registrar el resultado.
-
-- Revisar juntos la segunda fase, corregir los detalles que indique el usuario y comprobar el Android real cuando sea posible.
-- Publicar únicamente después de su autorización; entonces actualizar esta memoria con commit y despliegue verificados.
+- Revisar la actualización en el Android real de Isis cuando sea posible.
+- Continuar cualquier nueva mejora en local y publicar únicamente con autorización del usuario.
+- Mantener esta memoria actualizada en cada entrega.
 
 ## Historial resumido
 
@@ -172,5 +172,7 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 | 25-10-2026 | Ampliación del mundo, seis regiones, nuevos paisajes, senderos, minimapa, mapa general y cámara ajustable | 32 pruebas y compilación; **solo local** |
 | 25-10-2026 | Uniones continuas de caminos y desplazamiento directo en terreno libre, con rodeos locales del agua | 35 pruebas, compilación y revisión visual; **solo local** |
 | 25-10-2026 | Creación de `MEMORIA.md` y `AGENTS.md` para mantener el contexto actualizado | Documentación; sin publicación |
+
+| 25-10-2026 | Publicación integral de segunda fase, menús, mapa y navegación corregida | 35 pruebas; versión funcional `75f9a3a`; Actions `40172945161` correcto y archivos públicos/caché verificados |
 
 Al añadir una entrada, indicar lo que realmente se comprobó y cualquier pendiente. Evitar copiar conversaciones completas, datos sensibles o resultados de pruebas que no se hayan ejecutado.

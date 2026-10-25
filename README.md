@@ -117,16 +117,16 @@ Referencias: [teclado y viewport en Chrome Android](https://developer.chrome.com
 
 Prueba pendiente en un Android real: salida por altavoz y audífonos; bloquear/desbloquear; cambiar de aplicación y reanudar; abrir el teclado en películas/postales; girar la pantalla; instalar desde HTTPS y abrir sin conexión. Las pruebas de escritorio y tamaños de pantalla no sustituyen estas comprobaciones del dispositivo.
 
-## En revisión local: jardinería y dirección visual
+## Jardinería y dirección visual
 
-Esta siguiente iteración aún no está publicada. Los parterres abren una mesa de jardinería con ocho lugares independientes. Puedes elegir semillas de girasol o margarita, tocar un lugar libre y usar la regadera para pasar de semilla a brote y a flor. Los parterres admiten mezclas de flores; no hay monedas, esperas obligatorias, agua limitada ni marchitamiento.
+Los parterres abren una mesa de jardinería con ocho lugares independientes. Puedes elegir semillas de girasol o margarita, tocar un lugar libre y usar la regadera para pasar de semilla a brote y a flor. Los parterres admiten mezclas de flores; no hay monedas, esperas obligatorias, agua limitada ni marchitamiento.
 
 El estado anterior migra conservando sus seis plantas y añade dos lugares libres por parterre. Se conserva la posición del personaje al llegar, soltar los controles o dejar la página. Luci acompaña al personaje y el mundo incorpora parterres de madera, senderos de piedra, árboles con gradientes y mariposas. Los efectos respetan movimiento reducido y la pausa del ambiente.
 
 Archivos de esta mecánica: `gardening-core.js` (estado y migración), `gardening.js` (interacción y dibujos), `gardening.css` (mesa de jardinería y pulido visual). `npm test` comprueba además la migración, las etapas individuales y la recuperación de la posición.
 La revisión usa `isis-game-v2`, leyendo `isis-game-v1` como punto de partida cuando no hay partida nueva. La copia antigua se conserva para que una pestaña de la versión publicada anterior no sobrescriba la jardinería nueva.
 
-## En revisión local: ilustración y animación
+## Ilustración y animación
 
 Esta revisión sigue sin publicar. Se añadió un personaje vectorial con piernas, brazos, bolso, rostro y vista de espaldas; la dirección se deriva del desplazamiento real. La caminata usa la distancia recorrida para sincronizar pasos y acelera/frena de manera gradual. Luci sigue con amortiguación para evitar saltos al cambiar de dirección.
 
@@ -135,7 +135,7 @@ El ambiente incorpora alas independientes en mariposas, ondulaciones del estanqu
 El rediseño usa una insignia floral, iconos de los rincones, paleta de bosque y luz de miel, un marco suave y transiciones de día/noche. Todo se dibuja con SVG y CSS; no se descargan sprites ni videos. Los módulos nuevos (`motion.js`, `illustration.js`, `atmosphere.css`) forman parte de la caché sin conexión y del paquete estático.
 
 
-### Fase local: un jardín propio
+### Un jardín propio
 
 La mochila incluye decoración (hasta 30 objetos, colocados junto a Isis y movibles) y exportación/importación JSON del jardín. El buzón y los sobres muestran notas incluidas en el juego. El editor de cartas personales se retiró porque no hay sincronización entre dispositivos. La mochila muestra una sola lista de hallazgos del día.
 
@@ -144,7 +144,7 @@ Cada nueva fecha local libera ambos parterres y renueva los hallazgos; los diez 
 Los encuentros incluyen composición de pétalos, dibujo de constelaciones y un paseo de tres paradas tras una mariposa. El ambiente respeta la pausa y el movimiento reducido del sistema.
 
 
-### Segunda fase (solo local, pendiente de revisión)
+### Segunda fase
 
 - Cuatro nuevos destinos del mapa: invernadero, claro de visitantes, sendero del río y rincón compartido.
 - Invernadero con tres semillas, seis combinaciones simétricas y flores permanentes de tres etapas. Repetir una mezcla no duplica ni reinicia la flor.
@@ -156,11 +156,14 @@ Los encuentros incluyen composición de pétalos, dibujo de constelaciones y un 
 - El progreso de la segunda fase forma parte de las copias existentes del jardín. Las partidas anteriores reciben valores iniciales válidos sin perder sus flores o recuerdos.
 
 
-### Menús de juego (local)
+### Menús de juego
 
 La mochila tiene compartimentos de rincones, paseos, objetos y ajustes. El cuaderno y los visitantes se recorren por páginas. Las actividades usan cabecera y salida fijas; las instrucciones son desplegables y las herramientas de decoración están separadas de las copias. Las pestañas admiten teclado y los controles mantienen al menos 44 px de alto. El estado completo del proyecto está en [MEMORIA.md](MEMORIA.md).
 
 
-### Mundo ampliado (local)
+### Mundo ampliado
 
-Mapa de 3000×2000 con seis regiones, destinos ilustrados, caminos conectados, minimapa, vista general y dos distancias de cámara. Elegir un rincón permite seguir los senderos; tocar un área libre va directamente o rodea el agua por un camino corto. Las uniones de los caminos se pintan como una red continua. Las partidas mantienen coordenadas válidas y los objetos de decoración pueden guardarse en las zonas nuevas. Los encuentros diarios usan 24 emplazamientos repartidos por el mundo. Esta ampliación todavía no está publicada.
+Mapa de 3000×2000 con seis regiones, destinos ilustrados, caminos conectados, minimapa, vista general y dos distancias de cámara. Elegir un rincón permite seguir los senderos; tocar un área libre va directamente o rodea el agua por un camino corto. Las uniones de los caminos se pintan como una red continua. Las partidas mantienen coordenadas válidas y los objetos de decoración pueden guardarse en las zonas nuevas. Los encuentros diarios usan 24 emplazamientos repartidos por el mundo. Segunda fase, menús, mapa y navegación publicados el 25 de octubre de 2026.
+
+
+Publicación funcional verificada: [`75f9a3a`](https://github.com/LuisP09/el-jardin/commit/75f9a3ab2cb6e8ee4c9d3e42155a9b7c411ca915), con [GitHub Actions completado](https://github.com/LuisP09/el-jardin/actions/runs/40172945161) y 35 pruebas aprobadas. Para actualizar la PWA instalada: **Mi mochila → Ajustes → Instalar / actualizar → Actualizar jardín**.
