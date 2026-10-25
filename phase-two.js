@@ -1,16 +1,18 @@
 import {paginateCards} from './game-menus.js';
+import {createCalmGames} from './calm-games.js';
 import {SEEDS,FLOWERS,VISITORS,RIVER_FINDS,WEATHER,MOMENTS,MOMENT_DETAILS,plantSpecial,waterSpecial,availableVisitors,riverRoute} from './phase-two-core.js';
 import {specialArt,animalArt,riverArt,momentArt,encounterArt} from './phase-two-art.js';
-const titles={greenhouse:'El invernadero',visitors:'Los visitantes',river:'El río',notebook:'Mi cuaderno',moments:'Nuestro rincón',weather:'El cielo'};
+const titles={greenhouse:'El invernadero',visitors:'Los visitantes',river:'El río',notebook:'Mi cuaderno',moments:'Nuestro rincón',weather:'El cielo',games:'Un ratito para mí'};
 export function createPhaseTwo({getData,save,stop,onMessage,encounters,motionPaused}){
  const $=id=>document.getElementById(id),dialog=$('phase-two-dialog'),body=$('phase-two-body');let current='',frame=0,previous=0,route=[],arrival=null,moment='picnic';
  const state=()=>getData().phase2;
  const status=text=>{$('phase-two-status').textContent=text;};
+ const calmGames=createCalmGames({body,status});
  function button(text,action,cls='phase-button'){const b=document.createElement('button');b.type='button';b.className=cls;b.textContent=text;b.onclick=action;return b;}
  function node(tag,text,cls){const n=document.createElement(tag);if(text)n.textContent=text;if(cls)n.className=cls;return n;}
  function card(art,title,description){const c=node('article',null,'phase-card');const image=node('div',null,'phase-illustration');image.innerHTML=art;c.append(image,node('h3',title),node('p',description));return c;}
- function open(kind){if(!titles[kind])return;stop();cancelAnimationFrame(frame);route=[];arrival=null;current=kind;body.replaceChildren();status('');dialog.dataset.place=kind;dialog.classList.toggle('phase-still',motionPaused());$('phase-two-title').textContent=titles[kind];if(!dialog.open)dialog.showModal();({greenhouse,visitors,river,notebook,moments,weather}[kind])();const introduction=body.querySelector(':scope > p');if(introduction){const help=node('details',null,'place-help'),summary=node('summary',kind==='notebook'?'Sobre el cuaderno':'Cómo jugar');summary.setAttribute('aria-label',summary.textContent);introduction.before(help);help.append(summary,introduction);}body.scrollTop=0;dialog.scrollTop=0;}
- $('close-phase-two').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{cancelAnimationFrame(frame);route=[];arrival=null;if(current==='river')applyWeather();save();});
+ function open(kind){if(!titles[kind])return;stop();calmGames.dispose();cancelAnimationFrame(frame);route=[];arrival=null;current=kind;body.replaceChildren();status('');dialog.dataset.place=kind;dialog.classList.toggle('phase-still',motionPaused());$('phase-two-title').textContent=titles[kind];if(!dialog.open)dialog.showModal();({greenhouse,visitors,river,notebook,moments,weather,games:calmGames.open}[kind])();const introduction=body.querySelector(':scope > p');if(introduction){const help=node('details',null,'place-help'),summary=node('summary',kind==='notebook'?'Sobre el cuaderno':'Cómo jugar');summary.setAttribute('aria-label',summary.textContent);introduction.before(help);help.append(summary,introduction);}body.scrollTop=0;dialog.scrollTop=0;}
+ $('close-phase-two').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{calmGames.dispose();cancelAnimationFrame(frame);route=[];arrival=null;if(current==='river')applyWeather();save();});
  document.querySelectorAll('[data-phase-open]').forEach(b=>b.onclick=()=>{$('backpack').close();open(b.dataset.phaseOpen);});
  function greenhouse(){
   body.append(node('p','Combina dos semillas y descubre una flor. Dale agua dos veces para verla abrirse. Estas flores permanecen contigo cuando empieza un nuevo día.'));

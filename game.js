@@ -1,3 +1,4 @@
+import {drawingLayout,shuffle,chooseDifferent} from './calm-games-core.js';
 import {PLACES,regionAt,walkablePoint,walkStep,planPath} from './world-layout.js';
 import {drawWorld} from './world-art.js';
 import {createWorldMap} from './world-map.js';
@@ -97,6 +98,7 @@ function updateGuide(){
 }
 function walkTo(s){if(!data.entered)return;beginRoute(s,{followRoads:true});arrival=s;setLuci(false);say(`Vamos ${s.name.toLowerCase().startsWith('el ')?'al '+s.name.toLowerCase().slice(3):'a '+s.name.toLowerCase()}. Puedes cambiar de camino cuando quieras.`);el('game-welcome').hidden=true;}
 function stop(){keys.clear();target=null;route=[];arrival=null;speed=0;player.classList.remove('walking');save();}
+window.addEventListener('garden-before-update',stop);
 function activity(panel){stop();const dialog=el('activity-dialog');dialog.dataset.panel=panel;dialog.showModal();if(['stars','art','cinema'].includes(panel))document.querySelector(`[data-view="${panel}"]`).click();}
 function interact(s=nearby){
   if(!s)return;
@@ -171,9 +173,9 @@ motionPreference.addEventListener('change',()=>{ambientPaused=motionPreference.m
 el('game-rest').onclick=()=>{stop();el('breath-dialog').showModal();};el('game-help').onclick=()=>{stop();el('help-dialog').showModal();};el('close-help').onclick=()=>el('help-dialog').close();el('close-pond').onclick=()=>el('pond-dialog').close();
 el('backpack-rest').onclick=()=>{el('backpack').close();el('game-rest').click();};
 el('backpack-help').onclick=()=>{el('backpack').close();el('game-help').click();};
-let ripples=0;const pondPrompts=['Si te apetece, encuentra un color que te guste a tu alrededor.','Ahora puedes notar una textura: la tela de tu ropa, el suelo bajo tus pies…','Escucha un sonido cercano. No necesitas cambiarlo, solo darte cuenta de que está ahí.','Aquí estás, en este pequeño instante. Puedes seguir mirando el agua o volver a pasear.'];
-el('pond-water').onclick=()=>{ripples++;el('pond-water').classList.remove('ripple');requestAnimationFrame(()=>el('pond-water').classList.add('ripple'));el('pond-prompt').textContent=pondPrompts[Math.min(ripples-1,3)];el('pond-caption').textContent=ripples>=3?'Una onda se va. Puedes quedarte o dejarla ir.':'Cada onda puede ser una pequeña pausa.';if(ripples>=3)remember('pond');};
-el('pond-again').onclick=()=>{ripples=0;el('pond-prompt').textContent='Toca el agua y observa cómo se abre una onda. Si te apetece, busca un color a tu alrededor.';el('pond-caption').textContent='Puedes quedarte aquí todo lo que quieras.';};
+let ripples=0;let pondDeck=[];const pondPrompts=['Si te apetece, encuentra un color que te guste a tu alrededor.','Ahora puedes notar una textura: la tela de tu ropa, el suelo bajo tus pies…','Escucha un sonido cercano. No necesitas cambiarlo, solo darte cuenta de que está ahí.','Aquí estás, en este pequeño instante. Puedes seguir mirando el agua o volver a pasear.'];
+el('pond-water').onclick=()=>{if(!pondDeck.length)pondDeck=shuffle(pondPrompts);ripples++;el('pond-water').classList.remove('ripple');requestAnimationFrame(()=>el('pond-water').classList.add('ripple'));el('pond-prompt').textContent=pondDeck.pop();el('pond-caption').textContent=ripples>=3?'Una onda se va. Puedes quedarte o dejarla ir.':'Cada onda puede ser una pequeña pausa.';if(ripples>=3)remember('pond');};
+el('pond-again').onclick=()=>{ripples=0;pondDeck=shuffle(pondPrompts);el('pond-prompt').textContent='Toca el agua y observa cómo se abre una onda. Si te apetece, busca un color a tu alrededor.';el('pond-caption').textContent='Puedes quedarte aquí todo lo que quieras.';};
 el('canvas').addEventListener('pointerup',()=>remember('art'));document.querySelectorAll('.star-button').forEach(button=>button.addEventListener('click',()=>{if(document.querySelectorAll('.star-button.found').length===5)remember('stars');}));
 document.querySelectorAll('dialog').forEach(dialog=>dialog.addEventListener('close',()=>{keys.clear();document.activeElement?.blur();checkDay();}));
 window.addEventListener('pagehide',stop);
@@ -193,16 +195,16 @@ function renderDecorations(){
  phaseTwo?.renderWorld();
  layer.innerHTML=data.decorations.map(d=>`<g transform="translate(${d.x} ${d.y})"><ellipse cy="21" rx="25" ry="6" fill="#15372b" opacity=".2"/>${art[d.type]}</g>`).join('');
 }
-let trailStep=0;
+let trailStep=0;const lastDrawingPrompt={};
 function renderDiscovery(s){
  const play=el('discovery-play');play.replaceChildren();
  if(s.id==='envelope')el('discovery-text').textContent='Isis, este jardín guarda un lugar para ti. Besito en tu pollollo.';
  if(s.id==='petals'||s.id==='constellation'){
-  const sky=s.id==='constellation';play.className=sky?'little-sky':'petal-mandala';
+  const sky=s.id==='constellation';play.className=sky?'little-sky':'petal-mandala';const prompts=sky?['Inventa un cielo con forma de río. O deja que aparezca otra figura.','Une unas luces como si fueran un caminito para Luci.','Puedes dibujar una pequeña casa entre las estrellas.','¿Qué figura aparece si empiezas por otra estrella?']:['Prueba una composición con pocos pétalos y mucho espacio.','Imagina una flor que solo crezca en el jardín de Isis.','Elige pétalos como si estuvieras dejando huellas en un camino.','Puedes hacer una corona, una media luna o algo sin nombre.'];lastDrawingPrompt[s.id]=chooseDifferent(prompts,lastDrawingPrompt[s.id]);el('discovery-text').textContent=lastDrawingPrompt[s.id];
   const drawing=document.createElementNS('http://www.w3.org/2000/svg','svg');drawing.setAttribute('viewBox','0 0 240 200');drawing.setAttribute('preserveAspectRatio','none');drawing.setAttribute('aria-hidden','true');play.append(drawing);let points=[];
-  const coords=[[120,22],[187,55],[202,125],[157,178],[80,174],[35,118],[52,52]];
+  const coords=drawingLayout();
   coords.forEach(([x,y],i)=>{const b=document.createElement('button');b.className='discovery-choice';b.textContent=sky?'✧':'❀';b.setAttribute('aria-label',(sky?'Estrella ':'Pétalo ')+(i+1));b.style.left=x/240*100+'%';b.style.top=y+'px';b.setAttribute('aria-pressed','false');b.onclick=()=>{b.classList.toggle('chosen');if(sky){points=points.filter(p=>p[0]!==x||p[1]!==y);if(b.classList.contains('chosen'))points.push([x,y]);drawing.innerHTML=`<polyline points="${points.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#e4c577" stroke-width="2"/>`;}b.setAttribute('aria-pressed',String(b.classList.contains('chosen')));};play.append(b);});
-  const reset=document.createElement('button');reset.className='play-reset';reset.textContent='Nuevo dibujo';reset.onclick=()=>{points=[];drawing.replaceChildren();play.querySelectorAll('[aria-pressed]').forEach(b=>{b.classList.remove('chosen');b.setAttribute('aria-pressed','false');});};play.append(reset);
+  const reset=document.createElement('button');reset.className='play-reset';reset.textContent=sky?'Otro cielo':'Otra composición';reset.onclick=()=>renderDiscovery(s);play.append(reset);
  }else{play.className='';}
  if(s.id==='trail'){
   if(trailStep===2)el('discovery-text').textContent='La mariposa encontró un claro y se queda contigo. Puedes descansar aquí o dar otro paseo con ella.';

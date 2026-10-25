@@ -139,3 +139,7 @@ dialog .close-game-panel{min-height:44px;top:10px;left:16px;padding:10px 8px;max
 @media(max-height:480px){#discovery-dialog{max-height:calc(100dvh - 20px);padding-top:58px}#discovery-symbol{font-size:44px;margin:0 0 12px}}
 /* Keep the large landscape static on touch devices; Luci and wildlife stay animated. */
 @media (pointer:coarse){.tree-canopy,.field-flower{animation:none}}
+.game-foot:has(#quick-update:not([hidden])){flex-wrap:wrap}
+.game-foot #quick-update{background:#e4e8ce;border:1px solid #afbc93;border-radius:18px;color:#395c3f;min-height:44px;padding:8px 12px;font:12px/1.4 'DM Sans',sans-serif}
+.game-foot #quick-update[hidden]{display:none}
+@media(max-width:750px){.game-foot #quick-update:not([hidden]){order:3;flex:1 0 100%;margin:0}}

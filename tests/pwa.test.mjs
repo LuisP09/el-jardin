@@ -14,13 +14,16 @@ function worker(scope) {
       if (!stores.has(name)) stores.set(name, new Map());
       const store = stores.get(name);
       return {
-        addAll: async files => files.forEach(file => store.set(new URL(file, scope).href, `cached:${file}`)),
+        addAll: async files => files.forEach(file => {
+          assert.equal(file.cache,'reload');
+          store.set(file.url,`cached:${file.url}`);
+        }),
         match: async request => store.get(request.url)
       };
     }
   };
   vm.runInNewContext(source, {
-    URL, Set, caches,
+    URL, Request, Set, caches,
     fetch: async () => { if (state.offline) throw Error('offline'); return 'network'; },
     self: {
       registration: { scope },
@@ -40,7 +43,7 @@ for (const path of ['/', '/el-jardin/']) {
     w.listeners.install({ waitUntil: promise => { work = promise; } });
     await work;
     w.state.offline = true;
-    for (const file of ['./', 'index.html', 'app.js', 'style.css', 'game.js', 'game.css', 'game-core.js', 'gardening.js', 'gardening-core.js', 'world-layout.js', 'world-art.js', 'world-map.js', 'world-map.css', 'game-menus.js', 'game-menus.css', 'phase-two.js', 'phase-two-core.js', 'phase-two-art.js', 'phase-two.css', 'daily-core.js', 'extras.js', 'motion.js', 'illustration.js', 'atmosphere.css', 'gardening.css', 'audio.js', 'soundscape.js', 'pwa.js', 'manifest.webmanifest', 'icons/icon-512.png']) {
+    for (const file of ['./', 'index.html', 'app.js', 'style.css', 'game.js', 'game.css', 'game-core.js', 'gardening.js', 'gardening-core.js', 'world-layout.js', 'world-art.js', 'world-map.js', 'world-map.css', 'game-menus.js', 'game-menus.css', 'calm-postcards.js', 'calm-games.js', 'calm-games-core.js', 'calm-games.css', 'phase-two.js', 'phase-two-core.js', 'phase-two-art.js', 'phase-two.css', 'daily-core.js', 'extras.js', 'motion.js', 'illustration.js', 'atmosphere.css', 'gardening.css', 'audio.js', 'soundscape.js', 'pwa.js', 'manifest.webmanifest', 'icons/icon-512.png']) {
       let response;
       w.listeners.fetch({ request: { url: new URL(file, scope).href, method: 'GET' }, respondWith: value => { response = value; } });
       assert.match(await response, /^cached:/);

@@ -137,7 +137,7 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 ## Desarrollo y comprobaciones
 
 - JavaScript/HTML/CSS sin dependencias de npm; Node.js 22 o posterior.
-- `npm test`: última ejecución verificada con **37 pruebas aprobadas**.
+- `npm test`: última ejecución verificada con **48 pruebas aprobadas**.
 - `npm run build`: genera `_site/` y valida archivos públicos e iconos.
 - Servidor usado: `python -m http.server 4176 --bind 127.0.0.1 --directory _site`.
 - Añadir cada nuevo módulo/estilo público a `scripts/build.mjs` y `sw.js`; ampliar la cobertura de archivos offline de `tests/pwa.test.mjs` y las comprobaciones del workflow cuando corresponda.
@@ -159,8 +159,27 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 
 - **Ajuste publicado y verificado:** movimiento de Isis a 205 unidades/s (antes 145), aceleración más ágil y render sin límite artificial de 30 FPS. Los cuadros lentos se recuperan en pasos pequeños de hasta 1/120 s, con límite de 150 ms para evitar saltos tras pausas. En dispositivos táctiles se desactiva el balanceo masivo de árboles y flores; Luci y fauna conservan sus animaciones. Publicado con autorización del usuario en `01657c6`; Actions `40173485762` correcto y archivos públicos verificados.
 - Validación del ajuste: 37 pruebas y build correctos; simulación de avance equivalente entre 10 y 120 FPS y recorrido por teclado en navegador. Falta confirmar fluidez en Android real; las pruebas no sustituyen una medición en ese teléfono.
+## Minijuegos y variedad (solo local)
+
+- Acceso: **Mi mochila → Mis cosas → Minijuegos**. Selector ilustrado «Un ratito para mí», integrado en el panel de actividades. Sin relojes, puntos, rachas, derrotas ni recompensas obligatorias. No promete efectos terapéuticos.
+- Selector ampliado con accesos «Algo sencillo», «Ocupar mi atención» y «Dejar una idea aquí». Son elecciones de actividad; no se pregunta, registra ni infiere el estado emocional. El texto de bienvenida permite estar triste o sin energía sin exigir cambiar cómo se siente.
+- **Ventanas del jardín:** cuarto minijuego. Apartar hasta doce hojas para descubrir una ilustración SVG local. Tres paisajes (girasoles, margaritas bajo la luna y atardecer junto al agua) con tema distinto al anterior. Se puede ver la postal entera desde el principio, salir o descubrir otra. Sin porcentaje de progreso ni obligación de terminar. Arte en `calm-postcards.js`, integrado también en precaché y workflow.
+- Ramos: modos «Poquitas flores» (9 objetivos) y «Jardín completo» (16), siempre con tres coincidencias y cuatro tipos. Nubes: tras dejarlas pasar se ofrecen paisaje, búsqueda pequeña o regreso al jardín; texto temporal sigue descartándose al salir. Luci: modo **Con Luci** predeterminado deja el camino visible; **De memoria** permite ocultarlo. Cambiar la ayuda conserva el avance y, al terminar, puede elegirse otro camino.
+- **Un ramo escondido:** buscar tres flores/hojas de un tipo entre 16 objetivos, cuatro clases distinguibles por símbolo, texto y color. Distribución nueva en cada ronda y objetivo distinto al anterior; elegir otra flor no resta nada. Ramo visual y opción de cambiar de paisaje.
+- **El sendero de Luci:** recordar secuencias de tres, cuatro o cinco luces con nombre y símbolo. Sin repeticiones consecutivas; se puede volver a mirar. Una elección diferente ofrece una pista y conserva todo el avance. Nuevas secuencias al repetir, sin temporizadores ni destellos.
+- **Nubes de paso:** nube con nombre opcional de hasta 80 caracteres. Se puede dejar pasar sin escribir, crear otra o salir en cualquier momento. El texto se inserta con `textContent`, no se guarda ni se envía, y se vacía al soltar la nube, cambiar de juego o cerrar el panel. No forma parte de la partida ni las copias.
+- Selector «Luci, elige uno para mí» evita elegir el último minijuego usado. El nivel de luces se conserva solo durante la sesión. Las animaciones respetan movimiento reducido y pausa del ambiente.
+- Variedad existente: pétalos y constelaciones generan posiciones nuevas con separación táctil, propuestas creativas distintas sin repetir la anterior y botón «Otra composición» / «Otro cielo». Estanque con propuestas barajadas que rotan, en vez de quedar atascado en la última frase.
+- Archivos: `calm-games.js`, `calm-games-core.js`, `calm-games.css`, integrados en build, precaché offline, pruebas y workflow. No se modifica el formato de las partidas.
+- Validación: **46 pruebas**, build y sintaxis correctos. Navegador: completar ramo y secuencia, elegir otra luz sin perder avance, poner/soltar nube y descartar texto al cerrar; consola sin errores. Selector en 320×640, 390×844, 844×390 y 1280×800 sin desbordamiento y botones de al menos 44 px; objetivos del ramo verificados también a 320 px. Falta prueba en Android real. Vista previa: http://localhost:4176/?preview=1&review=minigames.
+- Estado: **solo local**, junto con la mejora de actualizaciones PWA. No hacer push sin autorización del usuario.
+- Validación de esta ampliación: **48 pruebas**, build, sintaxis y diff correctos. Navegador: revelar hojas y postal completa, tema nuevo, seguir luces alternando ayuda sin perder avance, pasar de nubes a ramo de nueve flores. A 320 px: sin desbordamiento del ramo, objetivos y hojas de al menos 44 px. Captura de postal completa a 390×844; consola sin errores. Pendiente Android real.
+
 ## Pendiente
 
+- El usuario confirmó que borrar la caché resolvió la lentitud en celulares sin la optimización gráfica pendiente. Se retiró por completo el experimento de paisaje como textura; se conserva el paisaje vectorial publicado.
+- **Actualizaciones PWA en local:** búsqueda al iniciar, recuperar foco/visibilidad/conexión y cada 15 minutos mientras esté visible, con límite de una consulta automática por minuto. Botón «Buscar actualización» y aviso inferior «Nueva versión disponible» que abre el panel. Se guarda el paseo antes de activar/recargar; nunca se recarga por sorpresa. Gestiona activaciones desde otra pestaña y fallos sin conexión. Registro con `updateViaCache:none` e instalación de recursos con `cache:reload` para evitar reutilizar archivos HTTP antiguos.
+- Validación: 41 pruebas y build correctos. Ciclo real en servidor local separado: primera instalación sin aviso falso, detección de un worker nuevo, aviso móvil a 390×844, actualización elegida por botón, recarga y regreso al paseo, sin errores de consola. Pruebas automatizadas cubren offline, limitación de consultas, guardado, recarga única y otras pestañas. Sigue sin publicarse; requiere autorización.
 - Revisar la actualización en el Android real de Isis cuando sea posible.
 - Continuar cualquier nueva mejora en local y publicar únicamente con autorización del usuario.
 - Mantener esta memoria actualizada en cada entrega.
@@ -169,6 +188,10 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 
 | Fecha | Cambio | Validación / estado |
 | --- | --- | --- |
+| 25-10-2026 | Ventanas del jardín con tres ilustraciones, accesos según actividad deseada, ramos pequeños, Luci con ayuda visible y pasos opcionales tras las nubes | 48 pruebas, build y partidas verificadas en navegador; **solo local**, pendiente Android real |
+| 25-10-2026 | Tres minijuegos: ramos, secuencias de Luci y nubes temporales; variedad en pétalos, constelaciones y estanque | 46 pruebas, build, partidas y tamaños revisados en navegador; **solo local**, pendiente Android real |
+| 25-10-2026 | Retirado el experimento de textura; detección y aviso de actualizaciones PWA, búsqueda manual y descarga sin caché HTTP | 41 pruebas, build y ciclo real de actualización en navegador; **solo local**, sin publicar |
+| 25-10-2026 | Paisaje móvil convertido en textura, conservando capas interactivas; menos efectos de composición en controles y clima | 37 pruebas, build y navegador 390×844; textura, día/noche y movimiento verificados; **retirado** tras confirmar el usuario que borrar caché resolvió la lentitud |
 | 25-10-2026 | Corrección de lentitud en móvil: velocidad 205, respuesta más rápida, recuperación de cuadros lentos y menos animación de vegetación en pantallas táctiles | 37 pruebas, build y movimiento por teclado en navegador; **publicado en `01657c6`**, Actions y archivos públicos verificados; pendiente Android real |
 | Previo al 25-10-2026 | PWA, mundo explorable, móvil, audio, jardinería, Luci y continuidad | Publicaciones previas; commits `f6d4bf7` y `3d80bb7` |
 | 25-10-2026 | Decoración, diez encuentros, renovación diaria, copias, 24 notas y correcciones de botones; retirada del editor de cartas y lista duplicada | 20 pruebas; publicado en `bb6d31d`, Actions correcto |

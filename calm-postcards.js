@@ -1,0 +1,11 @@
+const THEMES={
+ sun:{title:'Un claro de girasoles',sky:'#c3d3b5',ground:'#779c70',glow:'#e6c26e',caption:'Un rincón puede ser bonito incluso en un día difícil.'},
+ moon:{title:'Margaritas bajo la luna',sky:'#334e59',ground:'#53796a',glow:'#eee0ac',caption:'No tienes que estar alegre para tener un lugar aquí.'},
+ rose:{title:'Un atardecer junto al agua',sky:'#d6b4a7',ground:'#809581',glow:'#f0d2a0',caption:'Este pequeño paisaje puede acompañarte tal como estás.'}
+};
+export const POSTCARD_THEMES=Object.keys(THEMES);
+export function postcardArt(id){
+ const t=THEMES[id]||THEMES.sun;
+ const flowers=Array.from({length:9},(_,i)=>{const x=35+i*48,y=255+(i%3)*18;return `<g transform="translate(${x} ${y})"><path d="M0 0v43m0-14q-19-16-23-5m23-4q20-18 24-9" fill="none" stroke="#365e48" stroke-width="3"/><g fill="${id==='moon'?'#f8efd4':id==='rose'?'#dca9ad':'#edc568'}">${Array.from({length:8},(_,j)=>`<ellipse cy="-9" rx="4" ry="10" transform="rotate(${j*45})"/>`).join('')}</g><circle r="7" fill="${id==='moon'?'#cfba75':'#85704b'}"/></g>`;}).join('');
+ return {title:t.title,caption:t.caption,svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" role="img" aria-label="${t.title}"><rect width="480" height="360" fill="${t.sky}"/><circle cx="365" cy="68" r="31" fill="${t.glow}"/><g fill="${t.glow}" opacity=".65"><circle cx="56" cy="51" r="2"/><circle cx="202" cy="38" r="2"/><circle cx="270" cy="103" r="3"/><path d="M108 75v14m-7-7h14M411 129v14m-7-7h14" stroke="${t.glow}" stroke-width="2"/></g><path d="M0 180Q100 105 235 174T480 156V360H0" fill="${t.ground}"/><path d="M0 219Q100 150 280 221T480 197V360H0" fill="#6b8f72"/><ellipse cx="251" cy="244" rx="110" ry="50" fill="#7fa8a0"/><path d="M179 234q64-18 131 0m-117 16q55 14 106 0" fill="none" stroke="#c4d5b6" stroke-width="3" opacity=".6"/><path d="M70 360Q75 273 115 211" fill="none" stroke="#c3b38a" stroke-width="31"/>${flowers}<g transform="translate(234 166)"><ellipse cy="13" rx="20" ry="7" fill="#324e47" opacity=".2"/><path d="M-10-10L-16 13Q0 20 16 13L10-10" fill="#e8dab4"/><circle cy="-24" r="13" fill="#e3bfa3"/><path d="M-14-22Q-18-48 4-42Q20-39 14-19L4-33Q-2-22-14-22" fill="#624c3e"/></g><g fill="#efdea0"><ellipse cx="278" cy="131" rx="10" ry="5"/><circle cx="278" cy="134" r="4"/></g></svg>`};
+}

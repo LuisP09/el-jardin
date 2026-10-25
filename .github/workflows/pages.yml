@@ -30,6 +30,9 @@ jobs:
           node --check world-art.js
           node --check world-map.js
           node --check game-menus.js
+          node --check calm-postcards.js
+          node --check calm-games.js
+          node --check calm-games-core.js
           node --check phase-two.js
           node --check phase-two-core.js
           node --check phase-two-art.js
