@@ -1,6 +1,28 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { approach, dampPoint, movementFacing, walkingPose } from '../motion.js';
+import { approach, dampPoint, movementFacing, walkingPose, movementSteps, WALK_SPEED, WALK_ACCELERATION } from '../motion.js';
+import {walkStep} from '../world-layout.js';
+
+test('El avance mantiene su velocidad a 10, 15, 30, 60 y 120 cuadros por segundo', () => {
+  const distances=[10,15,30,60,120].map(fps=>{
+    let position={x:500,y:1000},speed=0;
+    for(let frame=0;frame<fps*2;frame++)for(const dt of movementSteps(1/fps)){
+      speed=approach(speed,WALK_SPEED,WALK_ACCELERATION*dt);
+      position=walkStep(position,{x:1800,y:1000},speed*dt);
+    }
+    return position.x-500;
+  });
+  assert.ok(Math.min(...distances)>385);
+  assert.ok(Math.max(...distances)-Math.min(...distances)<2);
+});
+
+test('Un cuadro lento conserva el tiempo en pasos pequeños y una pausa larga no teletransporta', () => {
+  const steps=movementSteps(.1);
+  assert.ok(Math.abs(steps.reduce((sum,dt)=>sum+dt,0)-.1)<1e-10);
+  assert.ok(steps.every(dt=>dt<=1/120));
+  assert.ok(movementSteps(30).reduce((sum,dt)=>sum+dt,0)<=.15000001);
+  for(const value of [0,-1,NaN,Infinity])assert.deepEqual(movementSteps(value),[]);
+});
 
 test('Arrancar y frenar no sobrepasa la velocidad objetivo', () => {
   let speed=0;

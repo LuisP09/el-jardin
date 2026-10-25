@@ -9,7 +9,7 @@ import {createExtras} from './extras.js';
 import { WORLD, clampPoint, moveTowards, nearestStation, cameraBounds, restorePosition } from './game-core.js';
 import { restorePlots } from './gardening-core.js';
 import { createGardening, bloomSVG } from './gardening.js';
-import { approach, dampPoint, movementFacing } from './motion.js';
+import { approach, dampPoint, movementFacing, movementSteps, WALK_SPEED, WALK_ACCELERATION } from './motion.js';
 import { createActor, stationIcons } from './illustration.js';
 const el = id => document.getElementById(id);
 const svg = el('game-map'), player = el('player'), stage = document.querySelector('.game-stage');
@@ -122,15 +122,15 @@ function camera(){const b=cameraBounds(position,viewport.width,viewport.height,z
 function setTime(){stage.classList.toggle('day',data.day);el('game-time').textContent=data.day?'☀ Día':'☾ Noche';el('game-time').setAttribute('aria-pressed',String(data.day));const stops=el('ground').querySelectorAll('stop');stops[0].setAttribute('stop-color',data.day?'#9cb486':'#45694f');stops[1].setAttribute('stop-color',data.day?'#75996c':'#1b4038');const leaves=el('leaf-deep').querySelectorAll('stop');['#94ac79','#6f925f','#456e50'].forEach((color,i)=>leaves[i].setAttribute('stop-color',data.day?color:['#819769','#5c7e57','#315d48'][i]));save();}
 function loop(time){
   if(document.hidden){lastFrame=0;return;}
-  if(lastFrame&&time-lastFrame<1000/30){frameId=requestAnimationFrame(loop);return;}
-  const dt=lastFrame?Math.min((time-lastFrame)/1000,.05):0;lastFrame=time;
+  const steps=movementSteps(lastFrame?(time-lastFrame)/1000:0);
+  const dt=steps.reduce((sum,step)=>sum+step,0);lastFrame=time;
   const modal=!!document.querySelector('dialog[open]');let walking=false;
   stage.classList.toggle('scene-paused',modal||!data.entered);
   const before={...position};
-  if(data.entered&&!modal){let dx=(keys.has('right')?1:0)-(keys.has('left')?1:0),dy=(keys.has('down')?1:0)-(keys.has('up')?1:0);
-    speed=approach(speed,(dx||dy||target)?145:0,(dx||dy||target?600:850)*dt);
+  if(data.entered&&!modal)for(const dt of steps){let dx=(keys.has('right')?1:0)-(keys.has('left')?1:0),dy=(keys.has('down')?1:0)-(keys.has('up')?1:0);
+    speed=approach(speed,(dx||dy||target)?WALK_SPEED:0,(dx||dy||target?WALK_ACCELERATION:1250)*dt);
     if(dx||dy){if(luciExpanded)setLuci(false);target=null;route=[];arrival=null;const length=Math.hypot(dx,dy);lastVector={x:dx/length,y:dy/length};position=walkStep(position,{x:position.x+dx*100,y:position.y+dy*100},speed*dt);}
-    else if(target){lastVector={x:target.x-position.x,y:target.y-position.y};position=walkStep(position,target,speed*dt);const length=Math.hypot(lastVector.x,lastVector.y);if(length)lastVector={x:lastVector.x/length,y:lastVector.y/length};if(Math.hypot(position.x-target.x,position.y-target.y)<2){if(route.length){target=route.shift();}else{const reached=arrival;target=null;arrival=null;speed=0;if(reached)interact(reached);else save();}}}
+    else if(target){lastVector={x:target.x-position.x,y:target.y-position.y};position=walkStep(position,target,speed*dt);const length=Math.hypot(lastVector.x,lastVector.y);if(length)lastVector={x:lastVector.x/length,y:lastVector.y/length};if(Math.hypot(position.x-target.x,position.y-target.y)<2){if(route.length){target=route.shift();}else{const reached=arrival;target=null;arrival=null;speed=0;if(reached){interact(reached);break;}else save();}}}
     else if(speed>.1){position=walkStep(position,{x:position.x+lastVector.x*100,y:position.y+lastVector.y*100},speed*dt);}
   }
   const moved=Math.hypot(position.x-before.x,position.y-before.y);walking=moved>.01;

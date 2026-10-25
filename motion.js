@@ -24,3 +24,13 @@ export function walkingPose(distance, time, walking, muted) {
     arm: -step * 5
   };
 }
+export const WALK_SPEED = 205;
+export const WALK_ACCELERATION = 1050;
+
+// Catch up slow frames in small collision-safe steps; never replay a long pause.
+export function movementSteps(elapsed) {
+  const duration = Math.min(.15, Math.max(0, Number.isFinite(elapsed) ? elapsed : 0));
+  if (!duration) return [];
+  const count = Math.ceil(duration * 120);
+  return Array(count).fill(duration / count);
+}

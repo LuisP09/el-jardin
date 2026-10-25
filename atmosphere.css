@@ -137,3 +137,5 @@ dialog .close-game-panel{min-height:44px;top:10px;left:16px;padding:10px 8px;max
  .game-foot button{min-height:44px}
 }
 @media(max-height:480px){#discovery-dialog{max-height:calc(100dvh - 20px);padding-top:58px}#discovery-symbol{font-size:44px;margin:0 0 12px}}
+/* Keep the large landscape static on touch devices; Luci and wildlife stay animated. */
+@media (pointer:coarse){.tree-canopy,.field-flower{animation:none}}

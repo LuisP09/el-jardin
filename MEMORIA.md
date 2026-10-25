@@ -157,6 +157,8 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 
 ## Pendiente
 
+- **Ajuste local posterior a la publicación:** movimiento de Isis a 205 unidades/s (antes 145), aceleración más ágil y render sin límite artificial de 30 FPS. Los cuadros lentos se recuperan en pasos pequeños de hasta 1/120 s, con límite de 150 ms para evitar saltos tras pausas. En dispositivos táctiles se desactiva el balanceo masivo de árboles y flores; Luci y fauna conservan sus animaciones. No publicado.
+- Validación del ajuste: 37 pruebas y build correctos; simulación de avance equivalente entre 10 y 120 FPS y recorrido por teclado en navegador. Falta confirmar fluidez en Android real; las pruebas no sustituyen una medición en ese teléfono.
 - Revisar la actualización en el Android real de Isis cuando sea posible.
 - Continuar cualquier nueva mejora en local y publicar únicamente con autorización del usuario.
 - Mantener esta memoria actualizada en cada entrega.
@@ -165,6 +167,7 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 
 | Fecha | Cambio | Validación / estado |
 | --- | --- | --- |
+| 25-10-2026 | Corrección de lentitud en móvil: velocidad 205, respuesta más rápida, recuperación de cuadros lentos y menos animación de vegetación en pantallas táctiles | 37 pruebas, build y movimiento por teclado en navegador; **solo local**, pendiente Android real |
 | Previo al 25-10-2026 | PWA, mundo explorable, móvil, audio, jardinería, Luci y continuidad | Publicaciones previas; commits `f6d4bf7` y `3d80bb7` |
 | 25-10-2026 | Decoración, diez encuentros, renovación diaria, copias, 24 notas y correcciones de botones; retirada del editor de cartas y lista duplicada | 20 pruebas; publicado en `bb6d31d`, Actions correcto |
 | 25-10-2026 | Segunda fase: invernadero, visitantes, río, cuaderno, momentos y clima | 28 pruebas; compilación y revisión móvil; **solo local** |
