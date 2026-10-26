@@ -18,3 +18,7 @@ export function commitNote(state,now=new Date().toISOString(),id=globalThis.cryp
  const note={id:existing?.id||id,title:draft.title.trim().slice(0,80),text:draft.text.slice(0,3000),created:existing?.created||now,updated:now};
  state.entries=state.entries.filter(n=>n.id!==note.id);state.entries.unshift(note);state.draft={id:note.id,title:note.title,text:note.text};return {ok:true,note};
 }
+export function hasUnsavedDraft(state){
+ const draft=state.draft,original=state.entries.find(note=>note.id===draft.id);
+ return original?draft.title!==original.title||draft.text!==original.text:!!(draft.title||draft.text);
+}

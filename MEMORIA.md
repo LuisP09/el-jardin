@@ -16,6 +16,7 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 
 ## Estado de publicación
 
+- Publicación del pulido de notas y cuaderno autorizada el 25-10-2026; en preparación, pendiente verificar Actions y archivos públicos antes de marcarla completada.
 - Repositorio: https://github.com/LuisP09/el-jardin
 - Sitio público: https://luisp09.github.io/el-jardin/
 - Rama de publicación: `main`; un push activa `.github/workflows/pages.yml`.
@@ -137,7 +138,7 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 ## Desarrollo y comprobaciones
 
 - JavaScript/HTML/CSS sin dependencias de npm; Node.js 22 o posterior.
-- `npm test`: última ejecución verificada con **66 pruebas aprobadas**.
+- `npm test`: última ejecución verificada con **70 pruebas aprobadas** (incluye el pulido local posterior a la publicación).
 - `npm run build`: genera `_site/` y valida archivos públicos e iconos.
 - Servidor usado: `python -m http.server 4176 --bind 127.0.0.1 --directory _site`.
 - Añadir cada nuevo módulo/estilo público a `scripts/build.mjs` y `sw.js`; ampliar la cobertura de archivos offline de `tests/pwa.test.mjs` y las comprobaciones del workflow cuando corresponda.
@@ -219,6 +220,16 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 - Validación: **66 pruebas aprobadas**, build, sintaxis y diff correctos. Navegador: primera visita → Escribir; retorno con menú, entrada directa opcional tras recargar, juego y notas desde Inicio; guardar tema/ubicación del rincón, caminar y sentarse; Luci reconoce el rincón sin repetir la frase; reunir una postal; abrir Probar juntos. Inicio en 320×640, 390×844, 844×390 y 1280×800 sin desbordamiento ni botones de menos de 44 px. Consola sin errores. No equivale a una prueba con Isis ni con teclado Android real.
 - Capturas: `inicio-sencillo-android.png`, `rincon-personal-isis-android.png` en artefactos de la tarea. Estado: **publicado** en 78e0241 con autorización del usuario; Actions 40274720899 correcto y archivos públicos/caché 3ff998775d09b033 verificados. La revisión con Isis y el teclado Android real sigue pendiente.
 
+## Revisión y pulido de notas/cuaderno (solo local)
+
+- Revisión solicitada tras publicar el inicio y rincón. La versión pública sigue siendo `78e0241`; estos cambios no se han publicado.
+- Corregido: tocar la nota que se está editando ya no reemplaza la edición con el texto guardado.
+- Corregido: deshacer una eliminación recupera la nota sin sobrescribir un borrador nuevo, incluso si solo tiene título. Nueva nota y cambiar de nota también protegen los borradores con título sin cuerpo; los mensajes explican cómo conservarlos o vaciarlos.
+- Corregido: el cuaderno conserva la página dentro de la sesión al recoger un recuerdo y al volver a abrirlo. La confirmación de recogida permanece visible. El recuerdo sigue disponible para colocarlo de nuevo.
+- No cambia el formato de partidas ni copias. Se añadieron cuatro regresiones en `tests/polish.test.mjs` sobre los eventos reales del editor y la paginación.
+- Validación: **70 pruebas aprobadas**, build, sintaxis de `journal.js` y diff correctos. Navegador en origen aislado `127.0.0.1:4179` con texto inventado: edición sobre la misma nota, recuperación sin sustituir borrador, segunda página del cuaderno al recoger y reabrir; pantallas de 320 y 390 px sin desbordamiento horizontal, consola sin errores. Capturas `notas-borrador-protegido.png` y `cuaderno-pagina-conservada.png` en artefactos de la tarea. No se usaron notas personales.
+- Prioridades propuestas, todavía sin implementar: reducir opciones visibles en la mochila, enriquecer las variaciones de los juegos existentes y probar teclado, audio y movimiento en Android real con Isis.
+
 ## Pendiente
 
 - Revisar los minijuegos y la actualización en el Android real de Isis cuando sea posible.
@@ -229,6 +240,7 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 
 | Fecha | Cambio | Validación / estado |
 | --- | --- | --- |
+| 25-10-2026 | Revisión de notas y cuaderno: proteger ediciones y borradores al recuperar notas; conservar página y confirmación del cuaderno | 70 pruebas, build y flujos móviles con datos inventados; **solo local**, sin publicar; Android real pendiente |
 | 25-10-2026 | Publicación autorizada del inicio, rincón, Luci contextual, ajustes móviles y Probar juntos | 66 pruebas; versión funcional 78e0241; Actions 40274720899 correcto y archivos/caché 3ff998775d09b033 verificados; prueba con Isis y Android real pendiente |
 | 25-10-2026 | Inicio directo, Luci contextual, rincón personal, ajustes para teclado móvil y guía Probar juntos | 66 pruebas, build y flujos en navegador; **solo local**, revisión con Isis y Android real pendiente |
 | 25-10-2026 | Publicación autorizada de continuidad, notas persistentes y río renovado con patos | 61 pruebas; versión funcional ff2d645; Actions 40272462002 correcto, archivos públicos y caché 6dec94104f3c8abe verificados |

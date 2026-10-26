@@ -1,8 +1,8 @@
-export function paginateCards(container,{label='Página'}={}){
+export function paginateCards(container,{label='Página',initialPage=0,onPageChange}={}){
  const cards=Array.from(container.children);if(!cards.length||cards[0].classList.contains('phase-empty'))return;
- let page=0;const nav=document.createElement('nav');nav.className='book-pagination';nav.setAttribute('aria-label','Cambiar página');
+ let page=Number.isInteger(initialPage)?Math.max(0,Math.min(cards.length-1,initialPage)):0;const nav=document.createElement('nav');nav.className='book-pagination';nav.setAttribute('aria-label','Cambiar página');
  const prev=document.createElement('button'),next=document.createElement('button'),count=document.createElement('span');prev.type=next.type='button';prev.textContent='←';next.textContent='→';prev.setAttribute('aria-label','Página anterior');next.setAttribute('aria-label','Página siguiente');count.setAttribute('role','status');
- function show(){cards.forEach((card,i)=>{card.hidden=i!==page;});prev.disabled=page===0;next.disabled=page===cards.length-1;count.textContent=`${label} ${page+1} de ${cards.length}`;}
+ function show(){cards.forEach((card,i)=>{card.hidden=i!==page;});prev.disabled=page===0;next.disabled=page===cards.length-1;count.textContent=`${label} ${page+1} de ${cards.length}`;onPageChange?.(page);}
  prev.onclick=()=>{page=Math.max(0,page-1);show();};next.onclick=()=>{page=Math.min(cards.length-1,page+1);show();};nav.append(prev,count,next);container.after(nav);container.classList.add('paged-gallery');show();
 }
 export function initGameMenus(){
