@@ -166,8 +166,10 @@ La mochila tiene compartimentos de rincones, paseos, objetos y ajustes. El cuade
 Mapa de 3000×2000 con seis regiones, destinos ilustrados, caminos conectados, minimapa, vista general y dos distancias de cámara. Elegir un rincón permite seguir los senderos; tocar un área libre va directamente o rodea el agua por un camino corto. Las uniones de los caminos se pintan como una red continua. Las partidas mantienen coordenadas válidas y los objetos de decoración pueden guardarse en las zonas nuevas. Los encuentros diarios usan 24 emplazamientos repartidos por el mundo. Segunda fase, menús, mapa y navegación publicados el 25 de octubre de 2026.
 
 
-Publicación funcional verificada: [`ff2d645`](https://github.com/LuisP09/el-jardin/commit/ff2d6453007cddf4e9f1303959344bcc5960a0e4), con [GitHub Actions completado](https://github.com/LuisP09/el-jardin/actions/runs/40272462002) y 61 pruebas aprobadas. Para actualizar la PWA instalada: **Mi mochila → Ajustes → Instalar / actualizar → Actualizar jardín**.
+Publicación funcional verificada: [`78e0241`](https://github.com/LuisP09/el-jardin/commit/78e0241b06ccabfc9594edb9899431013798dba4), con [GitHub Actions completado](https://github.com/LuisP09/el-jardin/actions/runs/40274720899) y 66 pruebas aprobadas. Para actualizar la PWA instalada: **Mi mochila → Ajustes → Instalar / actualizar → Actualizar jardín**.
 
 Minijuegos publicados: Ventanas del jardín, Un ramo escondido, El sendero de Luci y Nubes de paso. Acceso desde Mi mochila → Mis cosas → Minijuegos. Incluyen ayuda visible, ramos pequeños, escenas variables y texto de nubes temporal que no se guarda. La PWA busca nuevas versiones y permite aplicarlas desde un aviso, guardando el paseo antes de recargar.
 
 También publicados: notas personales con borrador automático y copia de seguridad, patos persistentes en el río y barcos debajo del puente, recuerdos de minijuegos colocables en el mundo y guardados en el cuaderno, postura sentada con Luci, encuentros con elecciones y comentario voluntario sin envío automático.
+
+El inicio permite seguir el paseo, jugar o escribir directamente. Mi rincón conserva una banca personalizable y reúne recuerdos; Luci comenta el contexto sin avisos periódicos. Probar juntos ofrece una guía opcional para revisar el juego con Isis. La comprobación con su Android real sigue pendiente.
