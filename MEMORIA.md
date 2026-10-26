@@ -137,7 +137,7 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 ## Desarrollo y comprobaciones
 
 - JavaScript/HTML/CSS sin dependencias de npm; Node.js 22 o posterior.
-- `npm test`: última ejecución verificada con **61 pruebas aprobadas**.
+- `npm test`: última ejecución verificada con **66 pruebas aprobadas**.
 - `npm run build`: genera `_site/` y valida archivos públicos e iconos.
 - Servidor usado: `python -m http.server 4176 --bind 127.0.0.1 --directory _site`.
 - Añadir cada nuevo módulo/estilo público a `scripts/build.mjs` y `sw.js`; ampliar la cobertura de archivos offline de `tests/pwa.test.mjs` y las comprobaciones del workflow cuando corresponda.
@@ -206,6 +206,19 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 - Vista previa limpia: http://127.0.0.1:4178/?preview=1&review=river-notes (servidor local activo). Se usó 4178 porque la pestaña previa de 4176 reutilizaba un CSS antiguo; los datos de estos orígenes son independientes. Capturas en artefactos: `notas-persistentes-android.png` y `rio-patos-bajo-puente.png`.
 - Estado: **publicado** en `ff2d645`; Actions `40272462002` correcto. Archivos públicos de notas, patos, puente, recuerdos y caché offline verificados; caché `6dec94104f3c8abe`.
 
+## Entrada, rincón y revisión con Isis (solo local)
+
+- Petición: implementar cinco mejoras propuestas tras la publicación de notas/río: entrada sencilla, personalidad contextual de Luci, rincón propio, pulido Android y revisión con Isis. La revisión humana no se da por realizada: se prepararon herramientas y guía; siguen pendientes el teléfono real y su opinión.
+- **Inicio:** botón Inicio en la cabecera y menú de vuelta con «Seguir mi paseo», «Jugar un ratito» y «Escribir», sin pasar por la mochila. La posición se conserva. Opción de no mostrar ese menú al volver; se puede abrir manualmente. Primera visita también tiene accesos directos a juegos y notas.
+- **Luci:** frases de contexto según clima, día/noche, región del río, recuerdos cercanos y rincón propio. Evita repetir la última frase. Se activan al volver, sentarse y pulsar «Hablar con Luci» en su panel; no se añadieron avisos periódicos ni interpretación de ánimo/notas.
+- **Mi rincón:** elegir un claro, banca con tres paletas, flores y farolitos opcionales, todo disponible desde el principio. Se dibuja en el mundo y tiene acceso desde Inicio/Mis cosas. Isis camina hasta él y se sienta con Luci. Ubicación se ajusta para dar espacio frente al estanque, río y bordes. «Reunir mis recuerdos aquí» mueve únicamente recuerdos ya guardados; se siguen pudiendo colocar individualmente desde el cuaderno.
+- Estado nuevo en `phase2.retreat` (anchor, theme, flowers, lights) y `phase2.entryMenu`. Migración por defecto sin ubicación y con menú de entrada activo; conservados en renovación diaria y copias. No se cambian los formatos de copia ni las notas existentes.
+- **Android:** cabecera compacta para cuatro botones, tamaños táctiles y formularios de 16 px. Altura de panel según viewport visible durante edición, anclaje superior si el teclado reduce el área visible, y desplazamiento al campo enfocado. Sin bucle de animación adicional. Teclado físico/virtual de Android real aún no comprobado.
+- **Probar juntos:** acceso en Inicio y Mi mochila → Ajustes. Paseo opcional para revisar accesos, nota de prueba y rincón, con preguntas para conversar; sin seguimiento de pasos o respuestas. `REVISION_CON_ISIS.md` documenta la prueba real pendiente y evita copiar notas personales a la memoria. Se reutiliza el comentario voluntario de envío manual.
+- Archivos nuevos: `arrival-core.js`, `arrival.css`, `mobile-layout.js`, `retreat-art.js`, integrados en build, precaché y workflow. Pruebas `tests/arrival.test.mjs` cubren migración, copia/día, contexto de Luci, altura del teclado y arte.
+- Validación: **66 pruebas aprobadas**, build, sintaxis y diff correctos. Navegador: primera visita → Escribir; retorno con menú, entrada directa opcional tras recargar, juego y notas desde Inicio; guardar tema/ubicación del rincón, caminar y sentarse; Luci reconoce el rincón sin repetir la frase; reunir una postal; abrir Probar juntos. Inicio en 320×640, 390×844, 844×390 y 1280×800 sin desbordamiento ni botones de menos de 44 px. Consola sin errores. No equivale a una prueba con Isis ni con teclado Android real.
+- Capturas: `inicio-sencillo-android.png`, `rincon-personal-isis-android.png` en artefactos de la tarea. Estado: **solo local**, sin commit/push ni despliegue. La versión pública sigue en ff2d645.
+
 ## Pendiente
 
 - Revisar los minijuegos y la actualización en el Android real de Isis cuando sea posible.
@@ -216,6 +229,7 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 
 | Fecha | Cambio | Validación / estado |
 | --- | --- | --- |
+| 25-10-2026 | Inicio directo, Luci contextual, rincón personal, ajustes para teclado móvil y guía Probar juntos | 66 pruebas, build y flujos en navegador; **solo local**, revisión con Isis y Android real pendiente |
 | 25-10-2026 | Publicación autorizada de continuidad, notas persistentes y río renovado con patos | 61 pruebas; versión funcional ff2d645; Actions 40272462002 correcto, archivos públicos y caché 6dec94104f3c8abe verificados |
 | 25-10-2026 | Libreta personal con borrador y notas persistentes, patos y nuevo arte del río; flotantes debajo del puente | 61 pruebas, build, persistencia y cuatro tamaños de navegador; **solo local**, pendiente Android real |
 | 25-10-2026 | Cinco mejoras: presencia de Isis/Luci, recuerdos de minijuegos en jardín/cuaderno, encuentros con elecciones, arte SVG compartido y comentario voluntario | 55 pruebas, build, persistencia y revisión móvil en navegador; **solo local**, pendiente Android real y opinión de Isis |

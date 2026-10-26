@@ -1,3 +1,4 @@
+import {restoreRetreat} from './arrival-core.js';
 export const SEEDS={sunflower:'Girasol',daisy:'Margarita',starlight:'Luz de estrella'};
 export const SPECIAL_FLOWERS={
  'sunflower+sunflower':{id:'sol',name:'Girasol de ámbar',color:'#e5b44c',center:'#80543c',description:'Pétalos cálidos que recuerdan la última luz de la tarde.'},
@@ -17,7 +18,7 @@ const unique=(value,allowed)=>Array.isArray(value)?[...new Set(value.filter(x=>O
 export function restorePhaseTwo(value={}){
  value=value&&typeof value==='object'?value:{};const flowers={};
  for(const f of FLOWERS)if([1,2,3].includes(value.flowers?.[f.id]))flowers[f.id]=value.flowers[f.id];
- return {journal:restoreJournal(value.journal),ducks:Number.isInteger(value.ducks)?Math.max(0,Math.min(5,value.ducks)):0,souvenirs:restoreSouvenirs(value.souvenirs),flowers,visitors:unique(value.visitors,VISITORS),riverFinds:unique(value.riverFinds,RIVER_FINDS),moments:unique(value.moments,MOMENTS),weather:Object.hasOwn(WEATHER,value.weather)?value.weather:'clear',boats:Number.isInteger(value.boats)?Math.max(0,Math.min(999,value.boats)):0,riverPosition:riverPoint(value.riverPosition),details:Object.fromEntries(Object.keys(MOMENTS).map(id=>[id,unique(value.details?.[id],MOMENT_DETAILS[id])])),designs:Object.fromEntries(Object.keys(MOMENTS).map(id=>[id,['sage','honey','rose'].includes(value.designs?.[id])?value.designs[id]:'sage']))};
+ return {entryMenu:value.entryMenu!==false,retreat:restoreRetreat(value.retreat),journal:restoreJournal(value.journal),ducks:Number.isInteger(value.ducks)?Math.max(0,Math.min(5,value.ducks)):0,souvenirs:restoreSouvenirs(value.souvenirs),flowers,visitors:unique(value.visitors,VISITORS),riverFinds:unique(value.riverFinds,RIVER_FINDS),moments:unique(value.moments,MOMENTS),weather:Object.hasOwn(WEATHER,value.weather)?value.weather:'clear',boats:Number.isInteger(value.boats)?Math.max(0,Math.min(999,value.boats)):0,riverPosition:riverPoint(value.riverPosition),details:Object.fromEntries(Object.keys(MOMENTS).map(id=>[id,unique(value.details?.[id],MOMENT_DETAILS[id])])),designs:Object.fromEntries(Object.keys(MOMENTS).map(id=>[id,['sage','honey','rose'].includes(value.designs?.[id])?value.designs[id]:'sage']))};
 }
 export function combineSeeds(a,b){if(!Object.hasOwn(SEEDS,a)||!Object.hasOwn(SEEDS,b))throw Error('Elige dos semillas del invernadero.');return SPECIAL_FLOWERS[[a,b].sort().join('+')];}
 export function plantSpecial(state,a,b){const flower=combineSeeds(a,b);const fresh=!state.flowers[flower.id];if(fresh)state.flowers[flower.id]=1;return {flower,fresh};}

@@ -39,6 +39,9 @@ jobs:
           node --check journal.js
           node --check journal-core.js
           node --check river-scene.js
+          node --check arrival-core.js
+          node --check mobile-layout.js
+          node --check retreat-art.js
           node --check phase-two.js
           node --check phase-two-core.js
           node --check phase-two-art.js

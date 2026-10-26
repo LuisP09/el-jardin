@@ -1,3 +1,5 @@
+import {luciLine} from './arrival-core.js';
+import {initMobileLayout} from './mobile-layout.js';
 import {createGardenLife} from './garden-life.js';
 import {encounterVariant} from './continuity-core.js';
 import {drawingLayout,shuffle,chooseDifferent} from './calm-games-core.js';
@@ -16,7 +18,8 @@ import { approach, dampPoint, movementFacing, movementSteps, WALK_SPEED, WALK_AC
 import { createActor, stationIcons } from './illustration.js';
 const el = id => document.getElementById(id);
 const svg = el('game-map'), player = el('player'), stage = document.querySelector('.game-stage');
-const actor = createActor(player);
+const actor = createActor(player);initMobileLayout();
+let lastLuciLine=null;
 let gardenLife=null,seated=false;const encounterVisits={};
 const stations = [
   {id:'greenhouse',x:610,y:210,icon:'⌂',name:'El invernadero',action:'Combinar semillas',memory:'Una flor que permanece'},
@@ -68,8 +71,9 @@ function say(text,speaker='Luci, la luciérnaga'){
   el('companion-panel').classList.toggle('has-message',!luciExpanded);
 }
 let luciExpanded=false;
+function talkWithLuci(){const anchor=data.phase2.retreat.anchor;const context={weather:data.phase2.weather,day:data.day,region:regionAt(position).id,retreat:!!anchor&&Math.hypot(anchor.x-position.x,anchor.y-position.y)<160,memory:data.phase2.souvenirs.placed.some(p=>Math.hypot(p.x-position.x,p.y-position.y)<120)};lastLuciLine=luciLine(context,lastLuciLine);say(lastLuciLine);}
 function setLuci(expanded){luciExpanded=expanded;el('luci-content').hidden=!expanded;el('toggle-luci').setAttribute('aria-expanded',String(expanded));el('luci-toggle-label').textContent=expanded?'Cerrar ▾':'Leer ▴';if(expanded)el('companion-panel').classList.remove('has-message');}
-el('toggle-luci').onclick=()=>setLuci(!luciExpanded);
+el('toggle-luci').onclick=()=>setLuci(!luciExpanded);el('luci-chat').onclick=talkWithLuci;
 function remember(id){if(!data.memories.includes(id)){gardenLife?.react('heart');data.memories.push(id);save();}renderBackpack();updateGuide();}
 function tree(x,y,scale=1){return `<g transform="translate(${x} ${y}) scale(${scale})"><ellipse cy="20" rx="47" ry="16" fill="#102c28" opacity=".22"/><path d="M-7 15L-5-42 6-44 9 14Q0 19-7 15" fill="url(#bark)"/><path d="M0-10L-18-32M3-18L21-39" stroke="#9a8660" stroke-width="4"/><g class="tree-canopy" style="animation-delay:-${x%8}s"><path d="M-43-32Q-61-60-33-75Q-32-103-7-95Q17-115 31-87Q62-84 49-56Q67-36 39-22Q16-11 1-19Q-25-8-43-32" fill="url(#leaf-deep)"/><path d="M-35-65Q-18-88 3-81M12-90Q28-96 35-77M-42-43Q-32-59-20-52" stroke="#a9b786" stroke-width="4" opacity=".3" fill="none" stroke-linecap="round"/><g fill="#b0bf8a" opacity=".3"><ellipse cx="-15" cy="-70" rx="4" ry="2" transform="rotate(-30 -15 -70)"/><ellipse cx="24" cy="-47" rx="4" ry="2"/><ellipse cx="-29" cy="-38" rx="3" ry="2"/><ellipse cx="13" cy="-76" rx="3" ry="2"/></g></g><path d="M-17 21q-13-14-20-10m22 13q-4-18-13-23m49 20q7-18 14-18" stroke="#73916b" stroke-width="3" fill="none" stroke-linecap="round"/></g>`;}
 function flower(x,y,daisy=false,scale=1){return `<g transform="translate(${x} ${y}) scale(${scale})"><g class="field-flower" style="animation-delay:-${x%6}s"><path d="M0 8v-28" stroke="#8aa86b" stroke-width="2"/><ellipse cx="-5" cy="-3" rx="7" ry="3" fill="#8aa86b" transform="rotate(30 -5 -3)"/>${Array.from({length:daisy?10:12},(_,i)=>`<ellipse cy="-31" rx="${daisy?2.8:3.8}" ry="8" fill="${daisy?'#f6eed2':'#dfb95b'}" transform="rotate(${i*(daisy?36:30)} 0 -23)"/>`).join('')}<circle cy="-23" r="${daisy?4:7}" fill="${daisy?'#d1b963':'#66523c'}"/></g></g>`;}
@@ -106,7 +110,7 @@ function activity(panel){stop();const dialog=el('activity-dialog');dialog.datase
 function interact(s=nearby){
   if(!s)return;gardenLife?.react('star');
   stop();
-  if(encounters.some(e=>e.id===s.id)){
+  if(s.id==='retreat'){seated=true;gardenLife.setSeated(true);gardenLife.react('heart');talkWithLuci();return;}if(encounters.some(e=>e.id===s.id)){
     if(!data.finds.includes(s.id)){data.finds.push(s.id);if(!data.keepsakes.includes(s.id))data.keepsakes.push(s.id);save();renderBackpack();}
     el('discovery-title').textContent=s.name;el('discovery-text').textContent=s.text;el('discovery-symbol').textContent=s.symbol;
     renderDiscovery(s);el('discovery-dialog').showModal();say('Lo guardé en tus pequeños encuentros. Podemos volver cuando quieras.');
@@ -119,7 +123,7 @@ function interact(s=nearby){
   updateContext();
 }
 let contextSignature='';
-function updateContext(){nearby=nearestStation(position,stations,82)||nearestStation(position,encounters,68);const signature=`${nearby?.id||''}:${arrival?.id||''}:${data.beds[nearby?.id]||0}:${regionAt(position).id}`;if(signature===contextSignature)return;contextSignature=signature;const button=el('game-interact');button.disabled=!nearby;el('nearby-label').textContent=nearby?nearby.name:'Toca el camino para caminar';el('game-location').textContent=nearby?nearby.name.toUpperCase():regionAt(position).name.toUpperCase();let action=nearby?.action||'Acércate a un rincón';if(nearby&&['flowers','daisies'].includes(nearby.id))action='Cuidar este rincón';button.replaceChildren(document.createTextNode(action+' '));const kbd=document.createElement('kbd');kbd.textContent='E';button.append(kbd);stations.forEach(s=>{el(`station-${s.id}`).classList.toggle('nearest',s===nearby);el(`station-${s.id}`).classList.toggle('guiding',s===arrival);});}
+function updateContext(){nearby=nearestStation(position,data.phase2.retreat.anchor?[...stations,{id:'retreat',name:'Mi rincón',action:seated?'Hablar con Luci':'Sentarme con Luci',...data.phase2.retreat.anchor}]:stations,82)||nearestStation(position,encounters,68);const signature=`${nearby?.id||''}:${arrival?.id||''}:${data.beds[nearby?.id]||0}:${regionAt(position).id}:${seated}`;if(signature===contextSignature)return;contextSignature=signature;const button=el('game-interact');button.disabled=!nearby;el('nearby-label').textContent=nearby?nearby.name:'Toca el camino para caminar';el('game-location').textContent=nearby?nearby.name.toUpperCase():regionAt(position).name.toUpperCase();let action=nearby?.action||'Acércate a un rincón';if(nearby&&['flowers','daisies'].includes(nearby.id))action='Cuidar este rincón';button.replaceChildren(document.createTextNode(action+' '));const kbd=document.createElement('kbd');kbd.textContent='E';button.append(kbd);stations.forEach(s=>{el(`station-${s.id}`).classList.toggle('nearest',s===nearby);el(`station-${s.id}`).classList.toggle('guiding',s===arrival);});}
 function renderBackpack(){el('daily-destinations').replaceChildren();encounters.forEach(e=>{const b=document.createElement('button');b.textContent=e.symbol+' '+e.name;b.onclick=()=>{el('backpack').close();walkTo(e);};el('daily-destinations').append(b);});el('encounter-journal').textContent=data.finds.length?'En este paseo has encontrado: '+data.finds.map(id=>encounters.find(e=>e.id===id).name.toLowerCase()).join(' · ')+'.':'Luci guardará aquí los pequeños encuentros que elijas mirar durante tus paseos.';el('map-destinations').replaceChildren();stations.forEach(s=>{const button=document.createElement('button');const badge=document.createElement('span');badge.className='destination-art';badge.setAttribute('aria-hidden','true');badge.innerHTML=`<svg viewBox="-18 -18 36 36">${stationIcons[s.id]||stationIcons.flowers}</svg>`;const label=document.createElement('strong');label.textContent=s.name;button.append(badge,label);const status=document.createElement('span');status.textContent=data.memories.includes(s.id)?`♡ ${s.memory}`:'Un rincón por descubrir';button.append(status);button.onclick=()=>{el('backpack').close();walkTo(s);};el('map-destinations').append(button);});}
 let viewport={width:840,height:540},cameraDirty=true,frameId=0;
 const resizeObserver=new ResizeObserver(entries=>{const {width,height}=entries[0].contentRect;viewport={width,height};cameraDirty=true;});resizeObserver.observe(svg);
@@ -183,11 +187,13 @@ el('canvas').addEventListener('pointerup',()=>remember('art'));document.querySel
 document.querySelectorAll('dialog').forEach(dialog=>dialog.addEventListener('close',()=>{keys.clear();document.activeElement?.blur();checkDay();}));
 window.addEventListener('pagehide',stop);
 el('close-discovery').onclick=()=>el('discovery-dialog').close();
-gardenLife=createGardenLife({player,stage,onSit:()=>{if(!data.entered||document.querySelector('dialog[open]'))return;stop();seated=!seated;gardenLife.setSeated(seated);if(seated){gardenLife.react('heart');say('Me quedo cerquita, Isis. Podemos mirar el jardín sin hacer nada más.');}}});
-const phaseTwo=createPhaseTwo({getPosition:()=>walkablePoint({x:position.x+45,y:position.y+20}),onReaction:kind=>gardenLife.react(kind),getData:()=>data,save,stop,onMessage:say,encounters:()=>encounterTemplates,motionPaused:()=>ambientPaused});
+gardenLife=createGardenLife({player,stage,onSit:()=>{if(!data.entered||document.querySelector('dialog[open]'))return;stop();seated=!seated;gardenLife.setSeated(seated);if(seated){gardenLife.react('heart');talkWithLuci();}}});
+function visitRetreat(anchor){if(!anchor)return;stop();setLuci(false);beginRoute(anchor);arrival={id:'retreat',name:'Mi rincón',action:'Sentarme con Luci',...anchor};say('Vamos a tu rincón, Isis. Te acompaño hasta la banca.');}
+const phaseTwo=createPhaseTwo({onRetreatTravel:visitRetreat,getPosition:()=>walkablePoint({x:position.x+45,y:position.y+20}),onReaction:kind=>gardenLife.react(kind),getData:()=>data,save,stop,onMessage:say,encounters:()=>encounterTemplates,motionPaused:()=>ambientPaused});
 scenery();phaseTwo.renderWorld();renderDecorations();setTime();setMotion();renderBackpack();updateGuide();el('game-welcome').hidden=data.entered;frameId=requestAnimationFrame(loop);
 
-if(data.entered)say('Bienvenida de vuelta, Isis. Te guardé tu lugar; seguimos cuando quieras.');
+el('game-home').onclick=()=>{data.entered=true;el('game-welcome').hidden=true;save();phaseTwo.open('home');};document.querySelectorAll('[data-entry-launch]').forEach(b=>b.onclick=()=>{data.entered=true;el('game-welcome').hidden=true;save();phaseTwo.open(b.dataset.entryLaunch);});
+if(data.entered){talkWithLuci();if(data.phase2.entryMenu)phaseTwo.open('home');}
 
 function checkDay(){
  if(document.querySelector('dialog[open]'))return;
