@@ -16,14 +16,14 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 
 ## Estado de publicación
 
-- Publicación del pulido de notas y cuaderno autorizada el 25-10-2026; en preparación, pendiente verificar Actions y archivos públicos antes de marcarla completada.
+- Pulido de notas y cuaderno publicado con autorización el 25-10-2026; Actions y los cuatro módulos modificados comprobados en la versión pública.
 - Repositorio: https://github.com/LuisP09/el-jardin
 - Sitio público: https://luisp09.github.io/el-jardin/
 - Rama de publicación: `main`; un push activa `.github/workflows/pages.yml`.
-- Versión funcional publicada y verificada: `78e0241b06ccabfc9594edb9899431013798dba4`. Los commits posteriores de documentación no cambian esa versión funcional.
-- Despliegue verificado: https://github.com/LuisP09/el-jardin/actions/runs/40274720899 (completado correctamente).
+- Versión funcional publicada y verificada: `8504a86c8edcdb038e98ef847a81a584c86e3a4f`. Los commits posteriores de documentación no cambian esa versión funcional.
+- Despliegue verificado: https://github.com/LuisP09/el-jardin/actions/runs/40276246941 (completado correctamente).
 - **Segunda fase, menús de juego, mapa ampliado y correcciones de caminos publicados con autorización del usuario. GitHub Actions y archivos públicos verificados.**
-- Caché offline publicada: `3ff998775d09b033`; incluye mapa, menús, segunda fase, minijuegos y postales. El hash de CI puede diferir del local por los finales de línea de los archivos.
+- Caché offline publicada: `bd59f848b13cfee7`; incluye mapa, menús, segunda fase, minijuegos, postales y pulido de notas/cuaderno. El hash de CI puede diferir del local por los finales de línea de los archivos.
 - No hacer commit/push para publicar ni activar despliegues sin autorización del usuario.
 - Vista previa de la segunda fase: http://localhost:4176/?preview=1&review=phase-two
 - La vista previa requiere el servidor local activo; el enlace no es accesible desde el celular de Isis como si fuera un sitio público.
@@ -220,9 +220,9 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 - Validación: **66 pruebas aprobadas**, build, sintaxis y diff correctos. Navegador: primera visita → Escribir; retorno con menú, entrada directa opcional tras recargar, juego y notas desde Inicio; guardar tema/ubicación del rincón, caminar y sentarse; Luci reconoce el rincón sin repetir la frase; reunir una postal; abrir Probar juntos. Inicio en 320×640, 390×844, 844×390 y 1280×800 sin desbordamiento ni botones de menos de 44 px. Consola sin errores. No equivale a una prueba con Isis ni con teclado Android real.
 - Capturas: `inicio-sencillo-android.png`, `rincon-personal-isis-android.png` en artefactos de la tarea. Estado: **publicado** en 78e0241 con autorización del usuario; Actions 40274720899 correcto y archivos públicos/caché 3ff998775d09b033 verificados. La revisión con Isis y el teclado Android real sigue pendiente.
 
-## Revisión y pulido de notas/cuaderno (solo local)
+## Revisión y pulido de notas/cuaderno (publicado)
 
-- Revisión solicitada tras publicar el inicio y rincón. La versión pública sigue siendo `78e0241`; estos cambios no se han publicado.
+- Revisión solicitada tras publicar el inicio y rincón. Publicación posterior autorizada y verificada en `8504a86`, Actions `40276246941` correcto y caché pública `bd59f848b13cfee7`. Los cuatro módulos públicos coinciden con el código revisado, normalizando finales de línea.
 - Corregido: tocar la nota que se está editando ya no reemplaza la edición con el texto guardado.
 - Corregido: deshacer una eliminación recupera la nota sin sobrescribir un borrador nuevo, incluso si solo tiene título. Nueva nota y cambiar de nota también protegen los borradores con título sin cuerpo; los mensajes explican cómo conservarlos o vaciarlos.
 - Corregido: el cuaderno conserva la página dentro de la sesión al recoger un recuerdo y al volver a abrirlo. La confirmación de recogida permanece visible. El recuerdo sigue disponible para colocarlo de nuevo.
@@ -240,6 +240,7 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 
 | Fecha | Cambio | Validación / estado |
 | --- | --- | --- |
+| 25-10-2026 | Publicación autorizada del pulido de notas y cuaderno | 70 pruebas; versión funcional 8504a86; Actions 40276246941 correcto, cuatro módulos públicos y caché bd59f848b13cfee7 verificados |
 | 25-10-2026 | Revisión de notas y cuaderno: proteger ediciones y borradores al recuperar notas; conservar página y confirmación del cuaderno | 70 pruebas, build y flujos móviles con datos inventados; **solo local**, sin publicar; Android real pendiente |
 | 25-10-2026 | Publicación autorizada del inicio, rincón, Luci contextual, ajustes móviles y Probar juntos | 66 pruebas; versión funcional 78e0241; Actions 40274720899 correcto y archivos/caché 3ff998775d09b033 verificados; prueba con Isis y Android real pendiente |
 | 25-10-2026 | Inicio directo, Luci contextual, rincón personal, ajustes para teclado móvil y guía Probar juntos | 66 pruebas, build y flujos en navegador; **solo local**, revisión con Isis y Android real pendiente |
