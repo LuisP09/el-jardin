@@ -1,3 +1,5 @@
+import {createGardenLife} from './garden-life.js';
+import {encounterVariant} from './continuity-core.js';
 import {drawingLayout,shuffle,chooseDifferent} from './calm-games-core.js';
 import {PLACES,regionAt,walkablePoint,walkStep,planPath} from './world-layout.js';
 import {drawWorld} from './world-art.js';
@@ -15,6 +17,7 @@ import { createActor, stationIcons } from './illustration.js';
 const el = id => document.getElementById(id);
 const svg = el('game-map'), player = el('player'), stage = document.querySelector('.game-stage');
 const actor = createActor(player);
+let gardenLife=null,seated=false;const encounterVisits={};
 const stations = [
   {id:'greenhouse',x:610,y:210,icon:'⌂',name:'El invernadero',action:'Combinar semillas',memory:'Una flor que permanece'},
   {id:'visitors',x:400,y:765,icon:'♡',name:'El claro de los visitantes',action:'Conocer a los visitantes',memory:'Compañía entre flores'},
@@ -58,7 +61,7 @@ let speed=0,lastVector={x:0,y:1},strideDistance=0,ambientTime=0,facing=data.faci
 let nearbyEncounter=null,noticedEncounter=null,autosaveTime=0;
 let dailyCheck=0;let route=[],zoom=1;
 let restoringBackup=false;
-function save(){if(restoringBackup)return;data.position={...position};data.facing=facing;try{localStorage.setItem(SAVE_KEY,JSON.stringify(data));el('game-saved').textContent='Tu paseo está guardado en este dispositivo.';}catch{el('game-saved').textContent='Tu paseo continúa, pero este navegador no permitió guardarlo.';}}
+function save(){if(restoringBackup)return;data.position={...position};data.facing=facing;try{localStorage.setItem(SAVE_KEY,JSON.stringify(data));el('game-saved').textContent='Tu paseo está guardado en este dispositivo.';return true;}catch{el('game-saved').textContent='Tu paseo continúa, pero este navegador no permitió guardarlo.';return false;}}
 function say(text,speaker='Luci, la luciérnaga'){
   el('speaker').textContent=speaker;el('game-message').textContent=text;
   el('luci-preview').textContent=text;el('luci-announcement').textContent=text;
@@ -67,7 +70,7 @@ function say(text,speaker='Luci, la luciérnaga'){
 let luciExpanded=false;
 function setLuci(expanded){luciExpanded=expanded;el('luci-content').hidden=!expanded;el('toggle-luci').setAttribute('aria-expanded',String(expanded));el('luci-toggle-label').textContent=expanded?'Cerrar ▾':'Leer ▴';if(expanded)el('companion-panel').classList.remove('has-message');}
 el('toggle-luci').onclick=()=>setLuci(!luciExpanded);
-function remember(id){if(!data.memories.includes(id)){data.memories.push(id);save();}renderBackpack();updateGuide();}
+function remember(id){if(!data.memories.includes(id)){gardenLife?.react('heart');data.memories.push(id);save();}renderBackpack();updateGuide();}
 function tree(x,y,scale=1){return `<g transform="translate(${x} ${y}) scale(${scale})"><ellipse cy="20" rx="47" ry="16" fill="#102c28" opacity=".22"/><path d="M-7 15L-5-42 6-44 9 14Q0 19-7 15" fill="url(#bark)"/><path d="M0-10L-18-32M3-18L21-39" stroke="#9a8660" stroke-width="4"/><g class="tree-canopy" style="animation-delay:-${x%8}s"><path d="M-43-32Q-61-60-33-75Q-32-103-7-95Q17-115 31-87Q62-84 49-56Q67-36 39-22Q16-11 1-19Q-25-8-43-32" fill="url(#leaf-deep)"/><path d="M-35-65Q-18-88 3-81M12-90Q28-96 35-77M-42-43Q-32-59-20-52" stroke="#a9b786" stroke-width="4" opacity=".3" fill="none" stroke-linecap="round"/><g fill="#b0bf8a" opacity=".3"><ellipse cx="-15" cy="-70" rx="4" ry="2" transform="rotate(-30 -15 -70)"/><ellipse cx="24" cy="-47" rx="4" ry="2"/><ellipse cx="-29" cy="-38" rx="3" ry="2"/><ellipse cx="13" cy="-76" rx="3" ry="2"/></g></g><path d="M-17 21q-13-14-20-10m22 13q-4-18-13-23m49 20q7-18 14-18" stroke="#73916b" stroke-width="3" fill="none" stroke-linecap="round"/></g>`;}
 function flower(x,y,daisy=false,scale=1){return `<g transform="translate(${x} ${y}) scale(${scale})"><g class="field-flower" style="animation-delay:-${x%6}s"><path d="M0 8v-28" stroke="#8aa86b" stroke-width="2"/><ellipse cx="-5" cy="-3" rx="7" ry="3" fill="#8aa86b" transform="rotate(30 -5 -3)"/>${Array.from({length:daisy?10:12},(_,i)=>`<ellipse cy="-31" rx="${daisy?2.8:3.8}" ry="8" fill="${daisy?'#f6eed2':'#dfb95b'}" transform="rotate(${i*(daisy?36:30)} 0 -23)"/>`).join('')}<circle cy="-23" r="${daisy?4:7}" fill="${daisy?'#d1b963':'#66523c'}"/></g></g>`;}
 function scenery(){
@@ -101,7 +104,7 @@ function stop(){keys.clear();target=null;route=[];arrival=null;speed=0;player.cl
 window.addEventListener('garden-before-update',stop);
 function activity(panel){stop();const dialog=el('activity-dialog');dialog.dataset.panel=panel;dialog.showModal();if(['stars','art','cinema'].includes(panel))document.querySelector(`[data-view="${panel}"]`).click();}
 function interact(s=nearby){
-  if(!s)return;
+  if(!s)return;gardenLife?.react('star');
   stop();
   if(encounters.some(e=>e.id===s.id)){
     if(!data.finds.includes(s.id)){data.finds.push(s.id);if(!data.keepsakes.includes(s.id))data.keepsakes.push(s.id);save();renderBackpack();}
@@ -129,7 +132,7 @@ function loop(time){
   const modal=!!document.querySelector('dialog[open]');let walking=false;
   stage.classList.toggle('scene-paused',modal||!data.entered);
   const before={...position};
-  if(data.entered&&!modal)for(const dt of steps){let dx=(keys.has('right')?1:0)-(keys.has('left')?1:0),dy=(keys.has('down')?1:0)-(keys.has('up')?1:0);
+  if(data.entered&&!modal)for(const dt of steps){let dx=(keys.has('right')?1:0)-(keys.has('left')?1:0),dy=(keys.has('down')?1:0)-(keys.has('up')?1:0);if(seated&&(dx||dy||target)){seated=false;gardenLife.setSeated(false);}
     speed=approach(speed,(dx||dy||target)?WALK_SPEED:0,(dx||dy||target?WALK_ACCELERATION:1250)*dt);
     if(dx||dy){if(luciExpanded)setLuci(false);target=null;route=[];arrival=null;const length=Math.hypot(dx,dy);lastVector={x:dx/length,y:dy/length};position=walkStep(position,{x:position.x+dx*100,y:position.y+dy*100},speed*dt);}
     else if(target){lastVector={x:target.x-position.x,y:target.y-position.y};position=walkStep(position,target,speed*dt);const length=Math.hypot(lastVector.x,lastVector.y);if(length)lastVector={x:lastVector.x/length,y:lastVector.y/length};if(Math.hypot(position.x-target.x,position.y-target.y)<2){if(route.length){target=route.shift();}else{const reached=arrival;target=null;arrival=null;speed=0;if(reached){interact(reached);break;}else save();}}}
@@ -146,7 +149,7 @@ function loop(time){
   stage.classList.toggle('flowers-aware',Math.hypot(position.x-470,position.y-510)<125||Math.hypot(position.x-780,position.y-340)<125);
   el('luci').classList.toggle('luci-discovering',!!nearbyEncounter);
   const t=ambientTime;
-  const guide=nearbyEncounter?{x:position.x+(nearbyEncounter.x-position.x)*.45,y:position.y+(nearbyEncounter.y-position.y)*.45-18}:{x:position.x+27,y:position.y-38};
+  const guide=seated?{x:position.x+18,y:position.y-20}:nearbyEncounter?{x:position.x+(nearbyEncounter.x-position.x)*.45,y:position.y+(nearbyEncounter.y-position.y)*.45-18}:{x:position.x+27,y:position.y-38};
   if(!modal)luciPosition=dampPoint(luciPosition,{x:guide.x+Math.sin(t)*9,y:guide.y+(walking||nearbyEncounter?Math.cos(t*.7)*6:22)},7,dt);
   el('luci').setAttribute('transform',`translate(${luciPosition.x} ${luciPosition.y})`);
   if(tapBeacon){tapBeacon.classList.toggle('active',!!target&&!modal);if(target){const destination=route.at(-1)||target;tapBeacon.setAttribute('transform',`translate(${destination.x} ${destination.y})`);}}
@@ -180,7 +183,8 @@ el('canvas').addEventListener('pointerup',()=>remember('art'));document.querySel
 document.querySelectorAll('dialog').forEach(dialog=>dialog.addEventListener('close',()=>{keys.clear();document.activeElement?.blur();checkDay();}));
 window.addEventListener('pagehide',stop);
 el('close-discovery').onclick=()=>el('discovery-dialog').close();
-const phaseTwo=createPhaseTwo({getData:()=>data,save,stop,onMessage:say,encounters:()=>encounterTemplates,motionPaused:()=>ambientPaused});
+gardenLife=createGardenLife({player,stage,onSit:()=>{if(!data.entered||document.querySelector('dialog[open]'))return;stop();seated=!seated;gardenLife.setSeated(seated);if(seated){gardenLife.react('heart');say('Me quedo cerquita, Isis. Podemos mirar el jardín sin hacer nada más.');}}});
+const phaseTwo=createPhaseTwo({getPosition:()=>walkablePoint({x:position.x+45,y:position.y+20}),onReaction:kind=>gardenLife.react(kind),getData:()=>data,save,stop,onMessage:say,encounters:()=>encounterTemplates,motionPaused:()=>ambientPaused});
 scenery();phaseTwo.renderWorld();renderDecorations();setTime();setMotion();renderBackpack();updateGuide();el('game-welcome').hidden=data.entered;frameId=requestAnimationFrame(loop);
 
 if(data.entered)say('Bienvenida de vuelta, Isis. Te guardé tu lugar; seguimos cuando quieras.');
@@ -198,6 +202,8 @@ function renderDecorations(){
 let trailStep=0;const lastDrawingPrompt={};
 function renderDiscovery(s){
  const play=el('discovery-play');play.replaceChildren();
+ const variant=encounterVariant(s.id,data.gardenDate,encounterVisits[s.id]||0);
+ if(variant){encounterVisits[s.id]=(encounterVisits[s.id]||0)+1;el('discovery-title').textContent=variant[0];el('discovery-text').textContent=variant[1];const choices=document.createElement('div');choices.className='encounter-options';for(const [i,text]of variant.slice(2).entries()){const b=document.createElement('button');b.className='discovery-action';b.textContent=text;b.onclick=()=>{choices.querySelectorAll('button').forEach(button=>button.setAttribute('aria-pressed',String(button===b)));el('discovery-text').textContent=i===0?'Isis se queda mirando el pequeño detalle. Luci baja su luz y la acompaña.':'Dejas que el jardín siga su camino. Luci se acerca a Isis; pueden quedarse o seguir paseando.';gardenLife.react(i===0?'leaf':'heart');say(i===0?'A veces un detalle basta para hacer una pausa. Me quedo contigo.':'El jardín seguirá aquí. Tú eliges nuestro próximo pasito.');};choices.append(b);}play.append(choices);}
  if(s.id==='envelope')el('discovery-text').textContent='Isis, este jardín guarda un lugar para ti. Besito en tu pollollo.';
  if(s.id==='petals'||s.id==='constellation'){
   const sky=s.id==='constellation';play.className=sky?'little-sky':'petal-mandala';const prompts=sky?['Inventa un cielo con forma de río. O deja que aparezca otra figura.','Une unas luces como si fueran un caminito para Luci.','Puedes dibujar una pequeña casa entre las estrellas.','¿Qué figura aparece si empiezas por otra estrella?']:['Prueba una composición con pocos pétalos y mucho espacio.','Imagina una flor que solo crezca en el jardín de Isis.','Elige pétalos como si estuvieras dejando huellas en un camino.','Puedes hacer una corona, una media luna o algo sin nombre.'];lastDrawingPrompt[s.id]=chooseDifferent(prompts,lastDrawingPrompt[s.id]);el('discovery-text').textContent=lastDrawingPrompt[s.id];

@@ -29,3 +29,7 @@
 .calm-next-steps{padding:14px;margin-top:18px;border:1px solid #c5cba9;border-radius:18px;background:#e2e6cf;display:flex;flex-wrap:wrap;gap:8px}.calm-next-steps[hidden]{display:none}.calm-next-steps p{flex-basis:100%;font:18px var(--serif);margin:0 0 4px;color:#46634b}.calm-next-steps button{flex:1 1 120px}
 .motion-muted .calm-postcard-leaf,.phase-still .calm-postcard-leaf{transition:none}
 @media(prefers-reduced-motion:reduce){.calm-postcard-leaf{transition:none}}
+.calm-card-symbol svg{display:block;width:58px;height:58px}.calm-bloom>span svg{display:block;width:37px;height:37px}.calm-light-trail span svg{width:30px;height:30px;display:block}.calm-light>span svg{width:48px;height:48px;display:block}.calm-thought-cloud>span svg{width:58px;height:58px;display:block;margin:auto}
+.souvenir-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;padding:14px;background:#dce5cd;border:1px solid #bdc9a4;border-radius:17px}.souvenir-actions[hidden]{display:none}.souvenir-actions button{flex:1 1 150px}
+.phase-card>.phase-button+.phase-button{margin-top:8px}
+.garden-feedback{display:grid;gap:12px;max-width:600px;margin:20px auto}.garden-feedback label{display:block;font:13px 'DM Sans',sans-serif;color:#4f654e;text-align:left}.garden-feedback select,.garden-feedback textarea{width:100%;min-width:0;max-width:100%;box-sizing:border-box;font:16px/1.5 'DM Sans',sans-serif;min-height:48px;padding:12px;border:1px solid #bac4a3;border-radius:13px;background:#fff8e9;color:#3d5c46}.garden-feedback small{font:12px/1.7 'DM Sans',sans-serif;color:#6b7d63}

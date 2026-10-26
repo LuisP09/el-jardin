@@ -137,7 +137,7 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 ## Desarrollo y comprobaciones
 
 - JavaScript/HTML/CSS sin dependencias de npm; Node.js 22 o posterior.
-- `npm test`: última ejecución verificada con **48 pruebas aprobadas**.
+- `npm test`: última ejecución verificada con **61 pruebas aprobadas**.
 - `npm run build`: genera `_site/` y valida archivos públicos e iconos.
 - Servidor usado: `python -m http.server 4176 --bind 127.0.0.1 --directory _site`.
 - Añadir cada nuevo módulo/estilo público a `scripts/build.mjs` y `sw.js`; ampliar la cobertura de archivos offline de `tests/pwa.test.mjs` y las comprobaciones del workflow cuando corresponda.
@@ -180,6 +180,32 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 - El usuario confirmó que borrar la caché resolvió la lentitud en celulares sin la optimización gráfica pendiente. Se retiró por completo el experimento de paisaje como textura; se conserva el paisaje vectorial publicado.
 - **Actualizaciones PWA publicadas:** búsqueda al iniciar, recuperar foco/visibilidad/conexión y cada 15 minutos mientras esté visible, con límite de una consulta automática por minuto. Botón «Buscar actualización» y aviso inferior «Nueva versión disponible» que abre el panel. Se guarda el paseo antes de activar/recargar; nunca se recarga por sorpresa. Gestiona activaciones desde otra pestaña y fallos sin conexión. Registro con `updateViaCache:none` e instalación de recursos con `cache:reload` para evitar reutilizar archivos HTTP antiguos.
 - Validación: 41 pruebas y build correctos. Ciclo real en servidor local separado: primera instalación sin aviso falso, detección de un worker nuevo, aviso móvil a 390×844, actualización elegida por botón, recarga y regreso al paseo, sin errores de consola. Pruebas automatizadas cubren offline, limitación de consultas, guardado, recarga única y otras pestañas. Publicado en `a72400b`; Actions y archivos públicos verificados.
+## Cinco mejoras de continuidad y personalidad (solo local)
+
+- Petición: trabajar los cinco puntos de presencia de Isis/Luci, conectar actividades con el mundo, variar encuentros, unificar arte y conocer la experiencia de Isis sin seguimiento automático. La publicación anterior sigue intacta.
+- **Presencia:** botón «Sentarme con Luci» en el mapa, postura sentada y Luci cerca. Volver a caminar levanta al personaje. Pequeñas reacciones ilustradas al descubrir, conservar recuerdos y volver de actividades. Sin bucle de animación adicional; se respeta movimiento reducido y pausa del ambiente.
+- **Continuidad:** al descubrir una postal, terminar un ramo o un sendero de luces se puede elegir «Guardar en mi cuaderno» o «Poner junto a Isis». Ocho recuerdos posibles (cuatro ramos, tres postales y un farol), sin contadores de colección ni requisitos diarios. Cuaderno permite colocar/mover o recoger; recoger conserva el recuerdo. La postal guardada muestra su ilustración original.
+- Datos nuevos en `phase2.souvenirs`: `owned` admite solo claves conocidas; `placed` conserva clave y posición, sin duplicados. Migración vacía para partidas anteriores; persiste al cambiar de día y en las copias JSON existentes. Colocación busca espacio cercano para evitar encimar recuerdos y evita agua/bordes. No se guardan textos de nubes ni comentarios en este campo.
+- **Encuentros:** mariposa, hoja, caracol y pluma tienen dos situaciones cada uno, dos elecciones opcionales y respuestas de Luci. La variante depende de fecha y visita de la sesión; volver ofrece otra situación. No modifica identificadores de hallazgos ni los diez encuentros diarios.
+- **Arte:** ilustraciones SVG compartidas para flores, hojas, luna, estrellas, nube, postales y reacciones; sustituyen símbolos de los botones de minijuegos y se reutilizan en recuerdos. Transiciones discretas, contenedores táctiles conservados. No se recuperó el experimento de textura móvil descartado.
+- **Opinión voluntaria:** Mi mochila → Ajustes → «Contar qué me gustó». Elegir un rincón y escribir hasta 400 caracteres. Se puede mostrar la pantalla o descargar un TXT para compartir manualmente. No hay envío, analítica, registro de ánimo ni almacenamiento del comentario en la partida; se limpia al cerrar. Falta recibir la opinión real de Isis.
+- Archivos nuevos: `continuity-core.js`, `garden-art.js`, `garden-life.js`; añadidos a build, caché offline y workflow. Pruebas en `tests/continuity.test.mjs`.
+- Validación: **55 pruebas**, build y diff correctos. Navegador: sentarse/levantarse al caminar, guardar/colocar postal, conservarla tras recargar y verla en el cuaderno; completar/conservar ramo y farol; dos variantes de hoja y sus elecciones; descargar comentario y verificar que se vacía al salir. Selector a 320×640, 390×844, 844×390 y 1280×800 sin desbordamiento y controles de al menos 44 px; consola sin errores. Emulación de tamaño, no prueba en Android real.
+- Vista previa: http://127.0.0.1:4176/?preview=1&review=continuity. Estado: **solo local**, sin commit/push ni publicación. Revisar con el usuario antes de publicar.
+
+## Notas personales y río renovado (solo local)
+
+- Petición nueva: escribir notas/pensamientos permanentes, invitar patos al río, hacer que barcos y patos pasen debajo del puente y mejorar el diseño de la ribera. Se mantienen las cinco mejoras locales anteriores; no se ha publicado esta entrega.
+- **Mis notas:** acceso en Mi mochila → Mis cosas → Mis notas. Libreta con títulos opcionales, fechas, lista de notas y edición. Hasta 80 notas de 3000 caracteres, con títulos de hasta 80. Guardar actualiza la nota sin duplicarla. Se puede quitar una y deshacer la última eliminación antes de salir de la sección.
+- Borrador automático con demora de 500 ms, actualizado también en memoria al escribir; se vacía el temporizador y se guarda al cerrar, pasar a segundo plano, actualizar la PWA o salir de la página. Borrador y notas sobreviven al cambio de día y se incluyen en la copia JSON existente. No se envían ni sincronizan con otro teléfono. Son notas personales de quien usa el jardín; esto no reintroduce el editor de cartas entre teléfonos retirado anteriormente. Las nubes y los comentarios voluntarios siguen siendo temporales.
+- Datos nuevos `phase2.journal = {entries,draft}` y `phase2.ducks` (0–5). Partidas anteriores migran sin borrar los campos previos. Texto de notas se muestra como texto/valor de formulario, sin interpretar HTML. Si falla guardar en el dispositivo, la libreta indica el fallo en vez de confirmar un guardado inexistente.
+- **Río:** nuevo arte SVG local con senderos, vegetación, piedras, una banca, orillas y puente de madera. Los flotantes se dibujan dentro de una capa recortada al cauce, antes del puente; Isis sigue encima de la pasarela. Se corrige el fallo de los barcos que pasaban por arriba.
+- «Invitar un pato» añade hasta cinco sin reiniciar el recorrido de los otros. Los patos permanecen elegidos al volver a entrar; «Dejar ir a los patos» permite retirarlos sin obligaciones de cuidado. Barquitos temporales con límite de cinco simultáneos y limpieza al terminar el recorrido. Animaciones CSS, con pausa local, movimiento reducido y pausa al pasar a segundo plano; no se añade otro bucle de animación JS.
+- Archivos nuevos `journal-core.js`, `journal.js`, `river-scene.js`, integrados en build, caché offline, pruebas y workflow. `tests/journal-river.test.mjs` comprueba creación/edición, límites, migración, copia, renovación diaria, patos y orden de capas del puente.
+- Validación: **61 pruebas aprobadas**, build y sintaxis correctos. Navegador: recarga inmediata conserva borrador; guardar dos notas, editar, quitar y deshacer; patos conservados al recargar, límite de cinco y pausa de animaciones. Orden de capas comprobado en DOM y captura con un pato bajo la pasarela. Notas y río revisados a 320×640, 390×844, 844×390 y 1280×800, sin desbordamiento horizontal y con botones HTML de al menos 44 px. Consola sin errores. Falta Android real.
+- Vista previa limpia: http://127.0.0.1:4178/?preview=1&review=river-notes (servidor local activo). Se usó 4178 porque la pestaña previa de 4176 reutilizaba un CSS antiguo; los datos de estos orígenes son independientes. Capturas en artefactos: `notas-persistentes-android.png` y `rio-patos-bajo-puente.png`.
+- Estado: **solo local**, sin commit/push ni despliegue. La versión pública continúa en `a72400b`.
+
 ## Pendiente
 
 - Revisar los minijuegos y la actualización en el Android real de Isis cuando sea posible.
@@ -190,6 +216,8 @@ Este archivo reúne lo construido, las decisiones y el estado de la publicación
 
 | Fecha | Cambio | Validación / estado |
 | --- | --- | --- |
+| 25-10-2026 | Libreta personal con borrador y notas persistentes, patos y nuevo arte del río; flotantes debajo del puente | 61 pruebas, build, persistencia y cuatro tamaños de navegador; **solo local**, pendiente Android real |
+| 25-10-2026 | Cinco mejoras: presencia de Isis/Luci, recuerdos de minijuegos en jardín/cuaderno, encuentros con elecciones, arte SVG compartido y comentario voluntario | 55 pruebas, build, persistencia y revisión móvil en navegador; **solo local**, pendiente Android real y opinión de Isis |
 | 25-10-2026 | Publicación autorizada de cuatro minijuegos, variedad y actualizaciones PWA | 48 pruebas; versión funcional a72400b; Actions 40175729661 correcto, archivos públicos y caché a4048f811c3acd3b verificados |
 | 25-10-2026 | Ventanas del jardín con tres ilustraciones, accesos según actividad deseada, ramos pequeños, Luci con ayuda visible y pasos opcionales tras las nubes | 48 pruebas, build y partidas verificadas en navegador; **solo local**, pendiente Android real |
 | 25-10-2026 | Tres minijuegos: ramos, secuencias de Luci y nubes temporales; variedad en pétalos, constelaciones y estanque | 46 pruebas, build, partidas y tamaños revisados en navegador; **solo local**, pendiente Android real |

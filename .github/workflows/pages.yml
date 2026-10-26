@@ -31,8 +31,14 @@ jobs:
           node --check world-map.js
           node --check game-menus.js
           node --check calm-postcards.js
+          node --check continuity-core.js
+          node --check garden-art.js
+          node --check garden-life.js
           node --check calm-games.js
           node --check calm-games-core.js
+          node --check journal.js
+          node --check journal-core.js
+          node --check river-scene.js
           node --check phase-two.js
           node --check phase-two-core.js
           node --check phase-two-art.js

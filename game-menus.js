@@ -11,6 +11,7 @@ export function initGameMenus(){
   tabs.forEach((tab,i)=>{tab.onclick=()=>select(tab);tab.onkeydown=e=>{let index=i;if(e.key==='ArrowRight')index=(i+1)%tabs.length;else if(e.key==='ArrowLeft')index=(i-1+tabs.length)%tabs.length;else if(e.key==='Home')index=0;else if(e.key==='End')index=tabs.length-1;else return;e.preventDefault();select(tabs[index],true);};});select(tabs[0]);
  });
  const icons={
+  journal:'<path d="M7 6h23v29H7ZM12 12h12m-12 6h9M19 29l12-19 5 3-12 19-7 3Z"/>',
   games:'<path d="M5 28L13 13 24 27 34 8M9 7v6m-3-3h6M26 31v6m-3-3h6"/>',
   notebook:'<path d="M5 5q8-3 15 0q7-3 15 0v28q-8-3-15 0q-7-3-15 0ZM20 5v28M9 12h6m-6 6h6m10-6h6m-6 6h6"/>',
   pot:'<path d="M10 21h20l-3 14H13ZM20 21V7m0 9Q4 2 9 13q4 7 11 3m0-4Q36 0 32 12q-6 6-12 0"/>',
@@ -20,7 +21,7 @@ export function initGameMenus(){
   rest:'<path d="M20 19Q4-1 4 14q-1 12 16 22q17-10 16-22Q36-1 20 19Z"/>'
  };
  for(const[id,icon,label]of [['open-personalize','pot','Decorar'],['open-postcards','postcard','Postales']]){const b=document.getElementById(id);decorate(b,icons[icon],label);}
- document.querySelectorAll('[data-phase-open]').forEach(b=>{const id=b.dataset.phaseOpen;decorate(b,icons[id]||icons.weather,({notebook:'Cuaderno',weather:'Clima',games:'Minijuegos'})[id]||'Mi jardín');});
+ document.querySelectorAll('[data-phase-open]').forEach(b=>{const id=b.dataset.phaseOpen;decorate(b,icons[id]||icons.weather,({journal:'Mis notas',notebook:'Cuaderno',weather:'Clima',games:'Minijuegos'})[id]||'Mi jardín');});
  for(const[id,icon]of [['open-install','install'],['backpack-rest','rest']]){const b=document.getElementById(id);if(b)b.dataset.menuIcon=icon;}
  function decorate(button,art,label){const full=button.textContent;button.setAttribute('aria-label',full);button.replaceChildren();const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 40 40');svg.setAttribute('aria-hidden','true');svg.innerHTML=art;const text=document.createElement('span');text.textContent=label;button.append(svg,text);}
 }

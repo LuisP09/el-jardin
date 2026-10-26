@@ -143,3 +143,12 @@ dialog .close-game-panel{min-height:44px;top:10px;left:16px;padding:10px 8px;max
 .game-foot #quick-update{background:#e4e8ce;border:1px solid #afbc93;border-radius:18px;color:#395c3f;min-height:44px;padding:8px 12px;font:12px/1.4 'DM Sans',sans-serif}
 .game-foot #quick-update[hidden]{display:none}
 @media(max-width:750px){.game-foot #quick-update:not([hidden]){order:3;flex:1 0 100%;margin:0}}
+/* Small, event-driven gestures; no extra animation loop. */
+#sit-with-luci{min-width:74px;min-height:44px;padding:8px;border:1px solid #c5c69c;border-radius:13px;background:#274f42e8;color:#f0e6bf;font:11px 'DM Sans',sans-serif}
+#sit-with-luci[aria-pressed=true]{background:#d9c991;color:#345442}
+#player.is-seated #actor-upper{translate:0 8px}#player.is-seated #actor-leg-left{rotate:-65deg;transform-origin:-6px 9px}#player.is-seated #actor-leg-right{rotate:65deg;transform-origin:6px 9px}
+.reaction-pop{animation:isis-reaction 2.4s ease-out both}@keyframes isis-reaction{0%{opacity:0;translate:0 6px}15%,75%{opacity:1;translate:0 0}100%{opacity:0;translate:0 -4px}}
+.encounter-options{display:grid;gap:10px;margin:16px 0}.encounter-options .discovery-action{min-height:46px;padding:12px;font:13px/1.5 'DM Sans',sans-serif;max-width:100%;border:1px solid #b7c19e;border-radius:18px;background:#e5e7cf;color:#426045;white-space:normal}.encounter-options .discovery-action[aria-pressed=true]{background:#d5dcb9}
+#garden-souvenirs [role=button]{cursor:pointer}#garden-souvenirs [role=button]:focus-visible{outline:3px solid #f1d68a}
+.motion-muted .reaction-pop,.paused-ambient .reaction-pop{animation:none}
+@media(prefers-reduced-motion:reduce){.reaction-pop{animation:none}}
